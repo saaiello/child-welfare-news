@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Child Welfare News</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500&family=DM+Serif+Display&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #F7F5F0; --surface: #FFFFFF; --border: #E2DED6; --border-strong: #C8C3B8;
+      --text-primary: #1A1814; --text-secondary: #6B6760; --text-tertiary: #9E9B96;
+      --accent: #1D4E7A; --accent-light: #E6EFF7;
+      --badge-bg: #EEF4FA; --badge-text: #1D4E7A; --badge-border: #B5CDE0;
+      --tag-active-bg: #E6EFF7; --tag-active-text: #1D4E7A; --tag-active-border: #9DBDD9;
+      --success-bg: #EAF3DE; --success-text: #3B6D11; --success-border: #639922;
+      --warn-bg: #FAEEDA; --warn-text: #854F0B; --warn-border: #BA7517;
+      --error-bg: #FAECE7; --error-text: #993C1D; --error-border: #D85A30;
+      --imprint-bg: #E6EFF7; --imprint-text: #1D4E7A; --imprint-border: #B5CDE0;
+      --casey-bg: #EAF3DE; --casey-text: #3B6D11; --casey-border: #9FE1CB;
+      --acf-bg: #F0EDF8; --acf-text: #4A3A8A; --acf-border: #CECBF6;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #18171A; --surface: #222128; --border: #333038; --border-strong: #4A4750;
+        --text-primary: #F0EDE8; --text-secondary: #A09D98; --text-tertiary: #6B6760;
+        --accent: #7BAACC; --accent-light: #1A2A38;
+        --badge-bg: #1A2A38; --badge-text: #7BAACC; --badge-border: #2E4A60;
+        --tag-active-bg: #1A2A38; --tag-active-text: #7BAACC; --tag-active-border: #2E4A60;
+        --success-bg: #1A2E10; --success-text: #97C459; --success-border: #3B6D11;
+        --warn-bg: #2A1E08; --warn-text: #EF9F27; --warn-border: #854F0B;
+        --error-bg: #2A1008; --error-text: #F0997B; --error-border: #993C1D;
+        --imprint-bg: #1A2A38; --imprint-text: #7BAACC; --imprint-border: #2E4A60;
+        --casey-bg: #1A2E10; --casey-text: #97C459; --casey-border: #3B6D11;
+        --acf-bg: #1E1A30; --acf-text: #A090D8; --acf-border: #3C3489;
+      }
+    }
+    body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text-primary); min-height: 100vh; font-size: 16px; line-height: 1.6; }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .page { max-width: 860px; margin: 0 auto; padding: 0 1.5rem 4rem; }
+    .masthead { border-bottom: 1px solid var(--border); padding: 2.5rem 0 2rem; margin-bottom: 2rem; }
+    .masthead-inner { display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 1rem; }
+    .masthead-title { font-family: 'DM Serif Display', serif; font-size: 40px; font-weight: 400; letter-spacing: -0.5px; line-height: 1.1; }
+    .masthead-date { font-size: 13px; color: var(--text-tertiary); text-align: right; }
+    .masthead-desc { font-size: 14px; color: var(--text-secondary); margin-top: 6px; max-width: 520px; }
+    .tab-row { display: flex; margin-bottom: 1.75rem; border-bottom: 1px solid var(--border); }
+    .tab { font-size: 14px; padding: 10px 18px; cursor: pointer; color: var(--text-secondary); border-bottom: 2px solid transparent; margin-bottom: -1px; transition: all 0.15s; background: none; border-top: none; border-left: none; border-right: none; font-family: 'DM Sans', sans-serif; }
+    .tab:hover { color: var(--text-primary); }
+    .tab.active { color: var(--accent); border-bottom-color: var(--accent); font-weight: 500; }
+    .section { display: none; }
+    .section.active { display: block; }
+    .search-row { display: flex; gap: 8px; margin-bottom: 1rem; }
+    .search-input { flex: 1; height: 42px; padding: 0 14px; font-size: 14px; font-family: 'DM Sans', sans-serif; border: 1px solid var(--border-strong); border-radius: 8px; background: var(--surface); color: var(--text-primary); outline: none; transition: border-color 0.15s; }
+    .search-input:focus { border-color: var(--accent); }
+    .search-input::placeholder { color: var(--text-tertiary); }
+    .search-btn { height: 42px; padding: 0 20px; font-size: 14px; font-family: 'DM Sans', sans-serif; font-weight: 500; background: var(--accent); color: #fff; border: none; border-radius: 8px; cursor: pointer; transition: opacity 0.15s; }
+    .search-btn:hover { opacity: 0.88; }
+    .search-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .tag-row { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 1.5rem; }
+    .tag { font-size: 12px; font-family: 'DM Sans', sans-serif; padding: 5px 12px; border-radius: 20px; border: 1px solid var(--border); background: var(--surface); color: var(--text-secondary); cursor: pointer; transition: all 0.15s; white-space: nowrap; }
+    .tag:hover { border-color: var(--border-strong); color: var(--text-primary); }
+    .tag.active { background: var(--tag-active-bg); border-color: var(--tag-active-border); color: var(--tag-active-text); font-weight: 500; }
+    .status-bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 8px; }
+    .results-count { font-size: 13px; color: var(--text-secondary); }
+    .api-pill { font-size: 11px; padding: 3px 10px; border-radius: 20px; border: 1px solid; font-weight: 500; }
+    .api-pill.live { background: var(--success-bg); color: var(--success-text); border-color: var(--success-border); }
+    .api-pill.loading { background: var(--warn-bg); color: var(--warn-text); border-color: var(--warn-border); }
+    .api-pill.error { background: var(--error-bg); color: var(--error-text); border-color: var(--error-border); }
+    .sort-select { font-size: 13px; font-family: 'DM Sans', sans-serif; padding: 4px 10px; border: 1px solid var(--border); border-radius: 6px; background: var(--surface); color: var(--text-secondary); cursor: pointer; outline: none; }
+    .article-grid { display: flex; flex-direction: column; gap: 1px; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+    .article-card { background: var(--surface); padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border); transition: background 0.12s; cursor: pointer; }
+    .article-card:last-child { border-bottom: none; }
+    .article-card:hover { background: var(--accent-light); }
+    .card-meta { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; flex-wrap: wrap; }
+    .source-badge { font-size: 11px; font-weight: 500; padding: 2px 8px; border-radius: 4px; border: 1px solid; }
+    .b-default { background: var(--badge-bg); color: var(--badge-text); border-color: var(--badge-border); }
+    .b-imprint { background: var(--imprint-bg); color: var(--imprint-text); border-color: var(--imprint-border); }
+    .b-casey { background: var(--casey-bg); color: var(--casey-text); border-color: var(--casey-border); }
+    .b-acf { background: var(--acf-bg); color: var(--acf-text); border-color: var(--acf-border); }
+    .topic-pill { font-size: 11px; padding: 2px 8px; border-radius: 4px; background: transparent; color: var(--text-tertiary); border: 1px solid var(--border); }
+    .card-date { font-size: 11px; color: var(--text-tertiary); margin-left: auto; }
+    .card-title { font-size: 15px; font-weight: 500; color: var(--text-primary); margin-bottom: 6px; line-height: 1.45; }
+    .card-desc { font-size: 13px; color: var(--text-secondary); line-height: 1.65; margin-bottom: 10px; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+    .card-link { font-size: 12px; color: var(--accent); font-weight: 500; }
+    .source-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; margin-bottom: 1.75rem; }
+    .source-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; cursor: pointer; transition: all 0.15s; }
+    .source-card:hover { border-color: var(--border-strong); }
+    .source-card.active { border-color: var(--accent); background: var(--accent-light); }
+    .source-card-name { font-size: 13px; font-weight: 500; color: var(--text-primary); margin-bottom: 3px; }
+    .source-card-desc { font-size: 11px; color: var(--text-tertiary); line-height: 1.5; }
+    .rss-status-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 8px; }
+    .refresh-btn { font-size: 12px; font-family: 'DM Sans', sans-serif; padding: 5px 12px; border: 1px solid var(--border); border-radius: 6px; background: var(--surface); color: var(--text-secondary); cursor: pointer; transition: all 0.15s; }
+    .refresh-btn:hover { border-color: var(--border-strong); color: var(--text-primary); }
+    .state-box { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 3rem 2rem; text-align: center; color: var(--text-secondary); font-size: 14px; }
+    .state-box p { margin-top: 8px; font-size: 13px; color: var(--text-tertiary); }
+    .spinner { width: 20px; height: 20px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.7s linear infinite; margin: 0 auto 12px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .footer { margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid var(--border); font-size: 12px; color: var(--text-tertiary); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+    @media (max-width: 600px) { .masthead-title { font-size: 28px; } .masthead-inner { flex-direction: column; align-items: flex-start; } .article-card { padding: 1rem; } }
+  </style>
+</head>
+<body>
+<div class="page">
+  <header class="masthead">
+    <div class="masthead-inner">
+      <div>
+        <h1 class="masthead-title">Child Welfare News</h1>
+        <p class="masthead-desc">Latest news, research, and policy across the child welfare ecosystem</p>
+      </div>
+      <div class="masthead-date" id="todayDate"></div>
+    </div>
+  </header>
+
+  <div class="tab-row">
+    <button class="tab active" onclick="switchTab('search')">Search &amp; Browse</button>
+    <button class="tab" onclick="switchTab('sources')">From the Field</button>
+  </div>
+
+  <div class="section active" id="tab-search">
+    <div class="search-row">
+      <input type="text" class="search-input" id="searchInput" placeholder='Search — e.g. "foster care reform" or "family treatment court"' autocomplete="off" />
+      <button class="search-btn" id="searchBtn" onclick="runSearch()">Search</button>
+    </div>
+    <div class="tag-row" id="tagRow"></div>
+    <div class="status-bar">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <span class="results-count" id="resultsCount"></span>
+        <span class="api-pill loading" id="apiPill">Loading...</span>
+      </div>
+      <select class="sort-select" id="sortSelect" onchange="renderArticles()">
+        <option value="date">Most recent</option>
+        <option value="topic">By topic</option>
+      </select>
+    </div>
+    <div id="articleGrid"></div>
+  </div>
+
+  <div class="section" id="tab-sources">
+    <div class="source-grid" id="sourceGrid"></div>
+    <div class="rss-status-row">
+      <span class="results-count" id="rssCount"></span>
+      <button class="refresh-btn" onclick="loadRSS(true)">Refresh feeds</button>
+    </div>
+    <div id="rssGrid"></div>
+  </div>
+
+  <footer class="footer">
+    <span>Child Welfare News — GNews + RSS from The Imprint, Casey Foundation &amp; Children's Bureau</span>
+    <span id="footerUpdate"></span>
+  </footer>
+</div>
+
+<script>
+const API_KEY = "92964dfef8d957bf56e23ee2e3c3a354";
+const PROXY = "https://corsproxy.io/?";
+const GNEWS_BASE = PROXY + encodeURIComponent("https://gnews.io/api/v4/search");
+
+const TOPICS = [
+  { label: "All", query: "child welfare" },
+  { label: "Foster care", query: "foster care children" },
+  { label: "Family preservation", query: "family preservation reunification" },
+  { label: "Substance use", query: "substance use disorder families child welfare" },
+  { label: "Family treatment court", query: "family treatment court" },
+  { label: "Adoption", query: "adoption foster care" },
+  { label: "Kinship care", query: "kinship care relative caregiver" },
+  { label: "Child abuse & neglect", query: "child abuse neglect prevention" },
+  { label: "Policy & legislation", query: "child welfare policy legislation" },
+  { label: "Mental health", query: "child welfare mental health youth" },
+  { label: "Racial equity", query: "racial equity child welfare disparity" },
+  { label: "Research", query: "child welfare research outcomes evidence" },
+];
+
+const RSS_SOURCES = [
+  { id: "imprint", name: "The Imprint", desc: "Daily child welfare and juvenile justice news", url: "https://imprintnews.org/feed", badge: "b-imprint" },
+  { id: "casey", name: "Annie E. Casey Foundation", desc: "Research, data and policy on child well-being", url: "https://www.aecf.org/feed", badge: "b-casey" },
+  { id: "acf", name: "Children's Bureau", desc: "Federal guidance, data and program updates", url: "https://www.acf.hhs.gov/cb/rss.xml", badge: "b-acf" },
+];
+
+let activeTag = "All";
+let gnewsArticles = [];
+let rssArticles = [];
+let activeSource = "all";
+let rssLoaded = false;
+
+document.getElementById("todayDate").textContent = new Date().toLocaleDateString("en-US", { weekday: "long", year: "numeric", month: "long", day: "numeric" });
+
+function switchTab(tab) {
+  document.querySelectorAll(".tab").forEach((t, i) => t.classList.toggle("active", (i === 0) === (tab === "search")));
+  document.querySelectorAll(".section").forEach(s => s.classList.remove("active"));
+  document.getElementById("tab-" + tab).classList.add("active");
+  if (tab === "sources" && !rssLoaded) loadRSS(false);
+}
+
+function buildTags() {
+  const row = document.getElementById("tagRow");
+  row.innerHTML = "";
+  TOPICS.forEach(t => {
+    const el = document.createElement("button");
+    el.className = "tag" + (t.label === activeTag ? " active" : "");
+    el.textContent = t.label;
+    el.onclick = () => { activeTag = t.label; buildTags(); runSearch(); };
+    row.appendChild(el);
+  });
+}
+
+function buildSourceGrid() {
+  const all = [{ id: "all", name: "All Sources", desc: "Show everything from all feeds" }, ...RSS_SOURCES];
+  document.getElementById("sourceGrid").innerHTML = all.map(s =>
+    `<div class="source-card ${activeSource === s.id ? 'active' : ''}" onclick="filterRSS('${s.id}')"><div class="source-card-name">${s.name}</div><div class="source-card-desc">${s.desc}</div></div>`
+  ).join("");
+}
+
+function filterRSS(id) {
+  activeSource = id;
+  buildSourceGrid();
+  renderRSS();
+}
+
+async function runSearch() {
+  const btn = document.getElementById("searchBtn");
+  const pill = document.getElementById("apiPill");
+  const grid = document.getElementById("articleGrid");
+  btn.disabled = true;
+  pill.textContent = "Fetching...";
+  pill.className = "api-pill loading";
+  grid.innerHTML = '<div class="state-box"><div class="spinner"></div>Loading articles...</div>';
+  document.getElementById("resultsCount").textContent = "";
+  const manual = document.getElementById("searchInput").value.trim();
+  const q = manual || (TOPICS.find(t => t.label === activeTag) || TOPICS[0]).query;
+  try {
+    const res = await fetch(`${GNEWS_BASE}?q=${encodeURIComponent(q)}&lang=en&country=us&max=10&sortby=publishedAt&apikey=${API_KEY}`);
+    const data = await res.json();
+    if (data.errors || !data.articles) {
+      pill.textContent = "API error"; pill.className = "api-pill error";
+      grid.innerHTML = '<div class="state-box">Could not load articles. Check your API key or try again later.</div>';
+    } else {
+      gnewsArticles = data.articles.map(a => ({ title: a.title || "Untitled", source: a.source?.name || "Unknown", topic: activeTag !== "All" ? activeTag : inferTopic(a.title + " " + (a.description || "")), date: a.publishedAt ? a.publishedAt.slice(0,10) : "", desc: a.description || "", url: a.url || "#", badge: "b-default" }));
+      pill.textContent = "Live"; pill.className = "api-pill live";
+      updateFooter(); renderArticles();
+    }
+  } catch(e) {
+    pill.textContent = "Network error"; pill.className = "api-pill error";
+    grid.innerHTML = '<div class="state-box">Network error — check your connection and try again.</div>';
+  }
+  btn.disabled = false;
+}
+
+function renderArticles() {
+  const sort = document.getElementById("sortSelect").value;
+  let sorted = [...gnewsArticles];
+  if (sort === "topic") sorted.sort((a,b) => a.topic.localeCompare(b.topic));
+  else sorted.sort((a,b) => new Date(b.date) - new Date(a.date));
+  document.getElementById("resultsCount").textContent = sorted.length ? `${sorted.length} article${sorted.length !== 1 ? "s" : ""}` : "No results";
+  document.getElementById("articleGrid").innerHTML = sorted.length
+    ? '<div class="article-grid">' + sorted.map(cardHTML).join("") + '</div>'
+    : '<div class="state-box">No articles found. Try different keywords or select a topic.</div>';
+}
+
+async function loadRSS(force) {
+  if (rssLoaded && !force) { renderRSS(); return; }
+  document.getElementById("rssGrid").innerHTML = '<div class="state-box"><div class="spinner"></div>Loading feeds from The Imprint, Casey Foundation, and Children\'s Bureau...</div>';
+  document.getElementById("rssCount").textContent = "";
+  const results = await Promise.allSettled(RSS_SOURCES.map(fetchFeed));
+  rssArticles = [];
+  results.forEach(r => { if (r.status === "fulfilled") rssArticles.push(...r.value); });
+  rssArticles.sort((a,b) => new Date(b.date) - new Date(a.date));
+  rssLoaded = true;
+  buildSourceGrid(); renderRSS(); updateFooter();
+}
+
+async function fetchFeed(source) {
+  const res = await fetch(PROXY + encodeURIComponent(source.url));
+  const text = await res.text();
+  const xml = new DOMParser().parseFromString(text, "text/xml");
+  return Array.from(xml.querySelectorAll("item")).slice(0, 12).map(item => {
+    const title = item.querySelector("title")?.textContent?.trim() || "Untitled";
+    const link = item.querySelector("link")?.textContent?.trim() || "#";
+    const rawDesc = item.querySelector("description")?.textContent || "";
+    const desc = stripHTML(rawDesc).slice(0, 280);
+    const pubDate = item.querySelector("pubDate")?.textContent?.trim() || "";
+    const date = pubDate ? new Date(pubDate).toISOString().slice(0,10) : "";
+    return { title, source: source.name, topic: inferTopic(title + " " + desc), date, desc, url: link, badge: source.badge, sourceId: source.id };
+  });
+}
+
+function renderRSS() {
+  const filtered = activeSource === "all" ? rssArticles : rssArticles.filter(a => a.sourceId === activeSource);
+  document.getElementById("rssCount").textContent = filtered.length ? `${filtered.length} article${filtered.length !== 1 ? "s" : ""}` : "No articles";
+  document.getElementById("rssGrid").innerHTML = filtered.length
+    ? '<div class="article-grid">' + filtered.map(cardHTML).join("") + '</div>'
+    : '<div class="state-box">No articles loaded. Some feeds may be temporarily unavailable.<p>Try refreshing or check back later.</p></div>';
+}
+
+function cardHTML(a) {
+  return `<div class="article-card" onclick="window.open('${esc(a.url)}','_blank')"><div class="card-meta"><span class="source-badge ${a.badge}">${esc(a.source)}</span><span class="topic-pill">${esc(a.topic)}</span><span class="card-date">${fmtDate(a.date)}</span></div><p class="card-title">${esc(a.title)}</p>${a.desc ? `<p class="card-desc">${esc(a.desc)}</p>` : ''}<a class="card-link" href="${esc(a.url)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">Read full article</a></div>`;
+}
+
+function inferTopic(t) {
+  t = t.toLowerCase();
+  if (t.includes("foster")) return "Foster care";
+  if (t.includes("adopt")) return "Adoption";
+  if (t.includes("kinship") || t.includes("relative caregiver")) return "Kinship care";
+  if (t.includes("substance") || t.includes("opioid") || t.includes("treatment court")) return "Substance use";
+  if (t.includes("family treatment court")) return "Family treatment court";
+  if (t.includes("abuse") || t.includes("neglect")) return "Child abuse & neglect";
+  if (t.includes("mental health") || t.includes("behavioral health")) return "Mental health";
+  if (t.includes("legislat") || t.includes("policy") || t.includes("bill") || t.includes("congress")) return "Policy & legislation";
+  if (t.includes("racial") || t.includes("disparity") || t.includes("equity")) return "Racial equity";
+  if (t.includes("research") || t.includes("study") || t.includes("outcomes")) return "Research";
+  if (t.includes("preserv") || t.includes("reunif")) return "Family preservation";
+  return "General";
+}
+
+function stripHTML(html) {
+  const d = document.createElement("div");
+  d.innerHTML = html;
+  return (d.textContent || d.innerText || "").replace(/\s+/g, " ").trim();
+}
+
+function fmtDate(d) {
+  if (!d) return "";
+  return new Date(d + "T00:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+}
+
+function esc(s) {
+  return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+}
+
+function updateFooter() {
+  document.getElementById("footerUpdate").textContent = "Updated " + new Date().toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
+}
+
+buildTags();
+buildSourceGrid();
+runSearch();
+</script>
+</body>
+</html>
