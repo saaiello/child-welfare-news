@@ -1,6 +1,6 @@
 # Child Welfare News
 
-A content aggregator pulling child welfare news articles from multiple sources into one place — so practitioners, researchers, and policymakers don't have to go looking across a dozen different sites to stay current.
+A content aggregator pulling child welfare news articles from multiple sources into one place so practitioners, researchers, and policymakers don't have to go looking across a dozen different sites to stay current.
 
 Live site: [childwelfarenews.github.io/child-welfare-news](https://childwelfarenews.github.io/child-welfare-news)
 
@@ -22,13 +22,7 @@ Weekly digest: [childwelfarenews.substack.com](https://childwelfarenews.substack
   - [The Imprint](https://imprintnews.org) — daily child welfare and juvenile justice news
   - [Annie E. Casey Foundation](https://aecf.org) — research, data, and policy
   - [Children's Bureau (ACF)](https://acf.hhs.gov/cb) — federal guidance and program updates
-- Hosted on GitHub Pages (free)
-
-## About the creator
-
-Built by Sam — a child welfare professional with 10+ years of experience spanning frontline practice and systems change, working at the intersection of child welfare and substance use treatment. Also holds a certificate in full stack software development.
-
-The editorial voice behind the [Child Welfare News Substack](https://childwelfarenews.substack.com).
+- Hosted on GitHub Pages
 
 ---
 
@@ -50,9 +44,3 @@ The editorial voice behind the [Child Welfare News Substack](https://childwelfar
 - [ ] Email signup flow integrated with Substack
 - [ ] Caching layer so RSS feeds don't require live fetching on every visit
 - [ ] Additional RSS sources (Chapin Hall, Child Trends, Urban Institute)
-
----
-
-## Running locally
-
-No build step required. Just open `index.html` in a browser. To use live article search, you'll need a [GNews API key](https://gnews.io).
