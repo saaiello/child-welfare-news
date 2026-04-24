@@ -19,25 +19,33 @@ const TOPICS = [
 
 const RSS_SOURCES = [
   { id: "imprint", name: "The Imprint", desc: "Daily child welfare and juvenile justice news", url: "https://imprintnews.org/feed", badge: "b-imprint" },
-  { id: "casey", name: "Annie E. Casey Foundation", desc: "Research, data and policy on child well-being", url: "https://www.aecf.org/feed", badge: "b-casey" },
-  { id: "acf", name: "Children's Bureau", desc: "Federal guidance, data and program updates", url: "https://www.acf.hhs.gov/cb/rss.xml", badge: "b-acf" },
+  { id: "casey", name: "Annie E. Casey Foundation", desc: "Research, data and policy on child well-being", url: "https://www.aecf.org/blog/rss.xml", badge: "b-casey" },
+  { id: "cwmonitor", name: "Child Welfare Monitor", desc: "Policy analysis and child advocacy", url: "https://childwelfaremonitor.org/feed", badge: "b-monitor" },
+  { id: "nccpr", name: "NCCPR", desc: "Child protection reform news and commentary", url: "https://www.nccprblog.org/feeds/posts/default?alt=rss", badge: "b-nccpr" },
+  { id: "childrensrights", name: "Children's Rights", desc: "National advocacy and litigation updates", url: "https://childrensrights.org/feed", badge: "b-rights" },
+];
+
+const SOURCE_FILTERS = [
+  { id: "all", label: "All Sources" },
+  { id: "gnews", label: "News Search" },
+  { id: "imprint", label: "The Imprint" },
+  { id: "casey", label: "Casey Foundation" },
+  { id: "cwmonitor", label: "Child Welfare Monitor" },
+  { id: "nccpr", label: "NCCPR" },
+  { id: "childrensrights", label: "Children's Rights" },
 ];
 
 let activeTag = "All";
-let gnewsArticles = [];
-let rssArticles = [];
 let activeSource = "all";
+let allArticles = [];
 let rssLoaded = false;
 
-document.getElementById("todayDate").textContent = new Date().toLocaleDateString("en-US", { weekday: "long", year: "numeric", month: "long", day: "numeric" });
+// Set today's date
+document.getElementById("todayDate").textContent = new Date().toLocaleDateString("en-US", {
+  weekday: "long", year: "numeric", month: "long", day: "numeric"
+});
 
-function switchTab(tab) {
-  document.querySelectorAll(".tab").forEach((t, i) => t.classList.toggle("active", (i === 0) === (tab === "search")));
-  document.querySelectorAll(".section").forEach(s => s.classList.remove("active"));
-  document.getElementById("tab-" + tab).classList.add("active");
-  if (tab === "sources" && !rssLoaded) loadRSS(false);
-}
-
+// Build topic filter tags
 function buildTags() {
   const row = document.getElementById("tagRow");
   row.innerHTML = "";
@@ -50,96 +58,151 @@ function buildTags() {
   });
 }
 
-function buildSourceGrid() {
-  const all = [{ id: "all", name: "All Sources", desc: "Show everything from all feeds" }, ...RSS_SOURCES];
-  document.getElementById("sourceGrid").innerHTML = all.map(s =>
-    `<div class="source-card ${activeSource === s.id ? 'active' : ''}" onclick="filterRSS('${s.id}')"><div class="source-card-name">${s.name}</div><div class="source-card-desc">${s.desc}</div></div>`
-  ).join("");
+// Build source filter chips
+function buildSourceFilters() {
+  const row = document.getElementById("sourceFilterRow");
+  row.innerHTML = "";
+  SOURCE_FILTERS.forEach(s => {
+    const el = document.createElement("button");
+    el.className = "tag" + (activeSource === s.id ? " active" : "");
+    el.textContent = s.label;
+    el.onclick = () => { activeSource = s.id; buildSourceFilters(); renderArticles(); };
+    row.appendChild(el);
+  });
 }
 
-function filterRSS(id) {
-  activeSource = id;
-  buildSourceGrid();
-  renderRSS();
-}
-
+// Main search — fetches GNews then RSS
 async function runSearch() {
   const btn = document.getElementById("searchBtn");
   const pill = document.getElementById("apiPill");
   const grid = document.getElementById("articleGrid");
+
   btn.disabled = true;
-  pill.textContent = "Fetching...";
+  pill.textContent = "Loading...";
   pill.className = "api-pill loading";
   grid.innerHTML = '<div class="state-box"><div class="spinner"></div>Loading articles...</div>';
   document.getElementById("resultsCount").textContent = "";
+
+  allArticles = [];
+
   const manual = document.getElementById("searchInput").value.trim();
   const q = manual || (TOPICS.find(t => t.label === activeTag) || TOPICS[0]).query;
-  try {
-    const res = await fetch(`${GNEWS_BASE}?q=${encodeURIComponent(q)}&lang=en&country=us&max=10&sortby=publishedAt&apikey=${API_KEY}`);
-    const data = await res.json();
-    if (data.errors || !data.articles) {
-      pill.textContent = "API error"; pill.className = "api-pill error";
-      grid.innerHTML = '<div class="state-box">Could not load articles. Check your API key or try again later.</div>';
-    } else {
-      gnewsArticles = data.articles.map(a => ({ title: a.title || "Untitled", source: a.source?.name || "Unknown", topic: activeTag !== "All" ? activeTag : inferTopic(a.title + " " + (a.description || "")), date: a.publishedAt ? a.publishedAt.slice(0,10) : "", desc: a.description || "", url: a.url || "#", badge: "b-default" }));
-      pill.textContent = "Live"; pill.className = "api-pill live";
-      updateFooter(); renderArticles();
-    }
-  } catch(e) {
-    pill.textContent = "Network error"; pill.className = "api-pill error";
-    grid.innerHTML = '<div class="state-box">Network error — check your connection and try again.</div>';
+
+  // Fetch GNews and RSS in parallel
+  const [gnewsResult, rssResult] = await Promise.allSettled([
+    fetchGNews(q),
+    rssLoaded ? Promise.resolve([]) : fetchAllRSS(),
+  ]);
+
+  if (gnewsResult.status === "fulfilled") {
+    allArticles.push(...gnewsResult.value);
   }
+
+  if (rssResult.status === "fulfilled" && rssResult.value.length > 0) {
+    allArticles.push(...rssResult.value);
+    rssLoaded = true;
+  } else if (rssLoaded) {
+    // RSS already loaded from previous search, pull from cache
+    allArticles.push(...window._rssCache || []);
+  }
+
+  // Cache RSS articles
+  if (rssResult.status === "fulfilled" && rssResult.value.length > 0) {
+    window._rssCache = rssResult.value;
+  }
+
+  // Sort everything by date
+  allArticles.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+  pill.textContent = "Live";
+  pill.className = "api-pill live";
+  updateFooter();
+  renderArticles();
   btn.disabled = false;
 }
 
-function renderArticles() {
-  const sort = document.getElementById("sortSelect").value;
-  let sorted = [...gnewsArticles];
-  if (sort === "topic") sorted.sort((a,b) => a.topic.localeCompare(b.topic));
-  else sorted.sort((a,b) => new Date(b.date) - new Date(a.date));
-  document.getElementById("resultsCount").textContent = sorted.length ? `${sorted.length} article${sorted.length !== 1 ? "s" : ""}` : "No results";
-  document.getElementById("articleGrid").innerHTML = sorted.length
-    ? '<div class="article-grid">' + sorted.map(cardHTML).join("") + '</div>'
-    : '<div class="state-box">No articles found. Try different keywords or select a topic.</div>';
+async function fetchGNews(q) {
+  try {
+    const res = await fetch(`${GNEWS_BASE}?q=${encodeURIComponent(q)}&lang=en&country=us&max=10&sortby=publishedAt&apikey=${API_KEY}`);
+    const data = await res.json();
+    if (data.errors || !data.articles) return [];
+    return data.articles.map(a => ({
+      title: a.title || "Untitled",
+      source: a.source?.name || "Unknown",
+      topic: inferTopic(a.title + " " + (a.description || "")),
+      date: a.publishedAt ? a.publishedAt.slice(0, 10) : "",
+      desc: a.description || "",
+      url: a.url || "#",
+      badge: "b-default",
+      sourceId: "gnews",
+    }));
+  } catch (e) {
+    return [];
+  }
 }
 
-async function loadRSS(force) {
-  if (rssLoaded && !force) { renderRSS(); return; }
-  document.getElementById("rssGrid").innerHTML = '<div class="state-box"><div class="spinner"></div>Loading feeds from The Imprint, Casey Foundation, and Children\'s Bureau...</div>';
-  document.getElementById("rssCount").textContent = "";
+async function fetchAllRSS() {
   const results = await Promise.allSettled(RSS_SOURCES.map(fetchFeed));
-  rssArticles = [];
-  results.forEach(r => { if (r.status === "fulfilled") rssArticles.push(...r.value); });
-  rssArticles.sort((a,b) => new Date(b.date) - new Date(a.date));
-  rssLoaded = true;
-  buildSourceGrid(); renderRSS(); updateFooter();
+  const articles = [];
+  results.forEach(r => { if (r.status === "fulfilled") articles.push(...r.value); });
+  return articles;
 }
 
 async function fetchFeed(source) {
-  const res = await fetch(PROXY + encodeURIComponent(source.url));
-  const text = await res.text();
-  const xml = new DOMParser().parseFromString(text, "text/xml");
-  return Array.from(xml.querySelectorAll("item")).slice(0, 12).map(item => {
-    const title = item.querySelector("title")?.textContent?.trim() || "Untitled";
-    const link = item.querySelector("link")?.textContent?.trim() || "#";
-    const rawDesc = item.querySelector("description")?.textContent || "";
-    const desc = stripHTML(rawDesc).slice(0, 280);
-    const pubDate = item.querySelector("pubDate")?.textContent?.trim() || "";
-    const date = pubDate ? new Date(pubDate).toISOString().slice(0,10) : "";
-    return { title, source: source.name, topic: inferTopic(title + " " + desc), date, desc, url: link, badge: source.badge, sourceId: source.id };
-  });
+  try {
+    const res = await fetch(PROXY + encodeURIComponent(source.url));
+    const text = await res.text();
+    const xml = new DOMParser().parseFromString(text, "text/html");
+    const items = Array.from(xml.querySelectorAll("item")).slice(0, 10);
+    return items.map(item => {
+      const title = item.querySelector("title")?.textContent?.trim() || "Untitled";
+      const link = item.querySelector("link")?.textContent?.trim() || "#";
+      const rawDesc = item.querySelector("description")?.textContent || "";
+      const desc = stripHTML(rawDesc).slice(0, 280);
+      const pubDate = item.querySelector("pubDate")?.textContent?.trim() || "";
+      const date = pubDate ? new Date(pubDate).toISOString().slice(0, 10) : "";
+      return { title, source: source.name, topic: inferTopic(title + " " + desc), date, desc, url: link, badge: source.badge, sourceId: source.id };
+    });
+  } catch (e) {
+    return [];
+  }
 }
 
-function renderRSS() {
-  const filtered = activeSource === "all" ? rssArticles : rssArticles.filter(a => a.sourceId === activeSource);
-  document.getElementById("rssCount").textContent = filtered.length ? `${filtered.length} article${filtered.length !== 1 ? "s" : ""}` : "No articles";
-  document.getElementById("rssGrid").innerHTML = filtered.length
+function renderArticles() {
+  const grid = document.getElementById("articleGrid");
+  const sort = document.getElementById("sortSelect").value;
+
+  let filtered = [...allArticles];
+
+  // Filter by source
+  if (activeSource !== "all") {
+    filtered = filtered.filter(a => a.sourceId === activeSource);
+  }
+
+  // Sort
+  if (sort === "topic") filtered.sort((a, b) => a.topic.localeCompare(b.topic));
+  else filtered.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+  document.getElementById("resultsCount").textContent = filtered.length
+    ? `${filtered.length} article${filtered.length !== 1 ? "s" : ""}`
+    : "No results";
+
+  grid.innerHTML = filtered.length
     ? '<div class="article-grid">' + filtered.map(cardHTML).join("") + '</div>'
-    : '<div class="state-box">No articles loaded. Some feeds may be temporarily unavailable.<p>Try refreshing or check back later.</p></div>';
+    : '<div class="state-box">No articles found. Try different keywords or select a topic.</div>';
 }
 
 function cardHTML(a) {
-  return `<div class="article-card" onclick="window.open('${esc(a.url)}','_blank')"><div class="card-meta"><span class="source-badge ${a.badge}">${esc(a.source)}</span><span class="topic-pill">${esc(a.topic)}</span><span class="card-date">${fmtDate(a.date)}</span></div><p class="card-title">${esc(a.title)}</p>${a.desc ? `<p class="card-desc">${esc(a.desc)}</p>` : ''}<a class="card-link" href="${esc(a.url)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">Read full article</a></div>`;
+  return `<div class="article-card" onclick="window.open('${esc(a.url)}','_blank')">
+    <div class="card-meta">
+      <span class="source-badge ${a.badge}">${esc(a.source)}</span>
+      <span class="topic-pill">${esc(a.topic)}</span>
+      <span class="card-date">${fmtDate(a.date)}</span>
+    </div>
+    <p class="card-title">${esc(a.title)}</p>
+    ${a.desc ? `<p class="card-desc">${esc(a.desc)}</p>` : ""}
+    <a class="card-link" href="${esc(a.url)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">Read full article</a>
+  </div>`;
 }
 
 function inferTopic(t) {
@@ -170,13 +233,18 @@ function fmtDate(d) {
 }
 
 function esc(s) {
-  return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+  return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 }
 
 function updateFooter() {
   document.getElementById("footerUpdate").textContent = "Updated " + new Date().toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
 }
 
+document.getElementById("searchInput").addEventListener("keydown", e => {
+  if (e.key === "Enter") runSearch();
+});
+
+// Init
 buildTags();
-buildSourceGrid();
+buildSourceFilters();
 runSearch();
