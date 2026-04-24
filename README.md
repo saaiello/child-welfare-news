@@ -2,7 +2,7 @@
 
 A content aggregator pulling child welfare news articles from multiple sources into one place so practitioners, researchers, and policymakers don't have to go looking across a dozen different sites to stay current.
 
-Live site: [childwelfarenews.github.io/child-welfare-news](https://childwelfarenews.github.io/child-welfare-news)
+Live site: [childwelfarenews.github.io/child-welfare-news](https://saaiello.github.io/child-welfare-news)
 
 Weekly digest: [childwelfarenews.substack.com](https://childwelfarenews.substack.com)
 
@@ -18,10 +18,7 @@ Weekly digest: [childwelfarenews.substack.com](https://childwelfarenews.substack
 ## Built with
 
 - [GNews API](https://gnews.io) — broad news search across 150,000+ sources
-- RSS feeds from:
-  - [The Imprint](https://imprintnews.org) — daily child welfare and juvenile justice news
-  - [Annie E. Casey Foundation](https://aecf.org) — research, data, and policy
-  - [Children's Bureau (ACF)](https://acf.hhs.gov/cb) — federal guidance and program updates
+- RSS feeds from 5 sources + Substack
 - Hosted on GitHub Pages
 
 ---
@@ -31,15 +28,22 @@ Weekly digest: [childwelfarenews.substack.com](https://childwelfarenews.substack
 ### Now
 
 - [x] GNews API search with topic filters
-- [x] RSS feeds from The Imprint, Casey Foundation, and Children's Bureau
+- [x] RSS feeds from 5 sources + Substack
 - [x] CORS proxy fix for browser-based API calls
-- [ ] Substack newsletter callout on the site
-- [ ] About page modal the project and its purpose
-- [ ] Weekly editorial picks section ("From the Editor")
+- [x] Single merged feed sorted by date
+- [x] Article thumbnails
+- [x] Source filters
+- [x] Share buttons — Email, LinkedIn, Copy link
+- [x] Featured Story + Editor's Pick hero section
+- [x] About modal with Substack link
+- [x] Substack newsletter callout on the site
+
 
 ### Next
 
-- [ ] Curated trusted source list baked into GNews searches
+- [ ] Brand colors across the site
+- [ ] Webinars tab
+- [ ] Podcasts tab
 
 ### Later
 
@@ -47,3 +51,4 @@ Weekly digest: [childwelfarenews.substack.com](https://childwelfarenews.substack
 - [ ] Email signup flow integrated with Substack
 - [ ] Caching layer so RSS feeds don't require live fetching on every visit
 - [ ] Additional RSS sources (Chapin Hall, Child Trends, Urban Institute)
+- [ ] Curated trusted source list for GNews searches
