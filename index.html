@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Child Welfare News</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500&family=DM+Serif+Display&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css"/>
+  </head>
+<body>
+<div class="page">
+  <header class="masthead">
+    <div class="masthead-inner">
+      <div>
+        <h1 class="masthead-title">Child Welfare News</h1>
+        <p class="masthead-desc">Latest news, research, and policy across the child welfare ecosystem</p>
+      </div>
+      <div class="masthead-date" id="todayDate"></div>
+    </div>
+  </header>
+
+  <div class="tab-row">
+    <button class="tab active" onclick="switchTab('search')">Search &amp; Browse</button>
+    <button class="tab" onclick="switchTab('sources')">From the Field</button>
+  </div>
+
+  <div class="section active" id="tab-search">
+    <div class="search-row">
+      <input type="text" class="search-input" id="searchInput" placeholder='Search — e.g. "foster care reform" or "family treatment court"' autocomplete="off" />
+      <button class="search-btn" id="searchBtn" onclick="runSearch()">Search</button>
+    </div>
+    <div class="tag-row" id="tagRow"></div>
+    <div class="status-bar">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <span class="results-count" id="resultsCount"></span>
+        <span class="api-pill loading" id="apiPill">Loading...</span>
+      </div>
+      <select class="sort-select" id="sortSelect" onchange="renderArticles()">
+        <option value="date">Most recent</option>
+        <option value="topic">By topic</option>
+      </select>
+    </div>
+    <div id="articleGrid"></div>
+  </div>
+
+  <div class="section" id="tab-sources">
+    <div class="source-grid" id="sourceGrid"></div>
+    <div class="rss-status-row">
+      <span class="results-count" id="rssCount"></span>
+      <button class="refresh-btn" onclick="loadRSS(true)">Refresh feeds</button>
+    </div>
+    <div id="rssGrid"></div>
+  </div>
+
+  <footer class="footer">
+    <span>Child Welfare News — GNews + RSS from The Imprint, Casey Foundation &amp; Children's Bureau</span>
+    <span id="footerUpdate"></span>
+  </footer>
+</div>
+
+<script src="js/app.js"></script>
+</body>
+</html>
