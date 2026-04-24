@@ -48,6 +48,15 @@ const EDITORS_PICKS = [
   },
 ];
 
+const FEATURED = {
+  title: "August: When Child Welfare Chooses",
+  source: "Child Welfare News",
+  url: "https://childwelfarenews.substack.com/p/august-when-child-welfare-chooses",
+  note: "Every August, the child welfare system reveals its priorities. This piece examines what those choices say about who we protect — and who we don't.",
+  date: "2024-08-01",
+  image: null,
+};
+
 let activeTag = "All";
 let activeSource = "all";
 let allArticles = [];
@@ -171,7 +180,8 @@ async function fetchFeed(source) {
     return items.map(item => {
       const rawTitle = item.querySelector("title")?.textContent?.trim() || "Untitled";
       const title = rawTitle.replace(/<!\[CDATA\[|\]\]>/g, "").trim();
-      const link = item.querySelector("link")?.textContent?.trim() || "#";
+      const linkEl = item.querySelector("link");
+      const link = linkEl?.textContent?.trim() || linkEl?.getAttribute("href") || item.querySelector("guid")?.textContent?.trim() || "#";
       const rawDesc = item.querySelector("description")?.textContent || "";
       const desc = stripHTML(rawDesc).slice(0, 280);
       const pubDate = item.querySelector("pubDate")?.textContent?.trim() || "";
@@ -279,26 +289,42 @@ document.getElementById("searchInput").addEventListener("keydown", e => {
 function renderEditorsPicks() {
   const section = document.getElementById("editorsPicks");
   if (!EDITORS_PICKS.length) { section.style.display = "none"; return; }
+  const p = EDITORS_PICKS[0];
   section.style.display = "block";
   section.innerHTML = `
-    <div class="picks-header">
-      <span class="picks-label">Editor's Picks</span>
-      <span class="picks-sub">Curated by the Child Welfare News team</span>
-    </div>
-    <div class="picks-grid">
-      ${EDITORS_PICKS.map(p => `
-        <div class="pick-card" onclick="window.open('${esc(p.url)}','_blank')">
-          ${p.image ? `<img class="pick-thumb" src="${esc(p.image)}" alt="" loading="lazy" onerror="this.style.display='none'" />` : ""}
-          <div class="pick-body">
-            <p class="pick-title">${esc(p.title)}</p>
-            <p class="pick-note">${esc(p.note)}</p>
-            <div class="pick-meta">
-              <span class="pick-source">${esc(p.source)}</span>
-              <span class="pick-date">${fmtDate(p.date)}</span>
-            </div>
-          </div>
+    <div class="featured-card" onclick="window.open('${esc(p.url)}','_blank')">
+      ${p.image ? `<img class="featured-img" src="${esc(p.image)}" alt="" loading="lazy" onerror="this.style.display='none'" />` : ""}
+      <div class="featured-body">
+        <div class="featured-eyebrow">
+          <span class="featured-label-pick">Editor's Pick</span>
+          <span class="featured-source">${esc(p.source)}</span>
+          <span class="featured-date">${fmtDate(p.date)}</span>
         </div>
-      `).join("")}
+        <p class="featured-title">${esc(p.title)}</p>
+        <p class="featured-note">${esc(p.note)}</p>
+        <a class="featured-link" href="${esc(p.url)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">Read full article →</a>
+      </div>
+    </div>
+  `;
+}
+
+function renderFeatured() {
+  const section = document.getElementById("featuredStory");
+  if (!FEATURED) { section.style.display = "none"; return; }
+  section.style.display = "block";
+  section.innerHTML = `
+    <div class="featured-card" onclick="window.open('${esc(FEATURED.url)}','_blank')">
+      ${FEATURED.image ? `<img class="featured-img" src="${esc(FEATURED.image)}" alt="" loading="lazy" onerror="this.style.display='none'" />` : ""}
+      <div class="featured-body">
+        <div class="featured-eyebrow">
+          <span class="featured-label">Featured Story</span>
+          <span class="featured-source">${esc(FEATURED.source)}</span>
+          <span class="featured-date">${fmtDate(FEATURED.date)}</span>
+        </div>
+        <p class="featured-title">${esc(FEATURED.title)}</p>
+        <p class="featured-note">${esc(FEATURED.note)}</p>
+        <a class="featured-link" href="${esc(FEATURED.url)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">Read full article →</a>
+      </div>
     </div>
   `;
 }
@@ -314,5 +340,6 @@ function closeAbout() {
 // Init
 buildTags();
 buildSourceFilters();
+renderFeatured();
 renderEditorsPicks();
 runSearch();

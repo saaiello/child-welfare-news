@@ -29,17 +29,20 @@ Weekly digest: [childwelfarenews.substack.com](https://childwelfarenews.substack
 ## Roadmap
 
 ### Now
+
 - [x] GNews API search with topic filters
 - [x] RSS feeds from The Imprint, Casey Foundation, and Children's Bureau
 - [x] CORS proxy fix for browser-based API calls
-
-### Next
 - [ ] Substack newsletter callout on the site
-- [ ] Curated trusted source list baked into GNews searches
-- [ ] About page explaining the project and its purpose
+- [ ] About page modal the project and its purpose
 - [ ] Weekly editorial picks section ("From the Editor")
 
+### Next
+
+- [ ] Curated trusted source list baked into GNews searches
+
 ### Later
+
 - [ ] Article annotations — "why this matters" notes on selected pieces
 - [ ] Email signup flow integrated with Substack
 - [ ] Caching layer so RSS feeds don't require live fetching on every visit
