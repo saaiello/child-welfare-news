@@ -303,6 +303,14 @@ function renderEditorsPicks() {
   `;
 }
 
+function openAbout() {
+  document.getElementById("modalOverlay").classList.add("open");
+}
+
+function closeAbout() {
+  document.getElementById("modalOverlay").classList.remove("open");
+}
+
 // Init
 buildTags();
 buildSourceFilters();

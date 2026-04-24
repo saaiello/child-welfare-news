@@ -18,10 +18,13 @@
         <h1 class="masthead-title">Child Welfare News</h1>
         <p class="masthead-desc">Latest news, research, and policy across the child welfare ecosystem</p>
       </div>
-      <div class="masthead-date" id="todayDate"></div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;">
+        <div class="masthead-date" id="todayDate"></div>
+      <button class="about-btn" onclick="openAbout()">About</button>
+      </div>
     </div>
   </header>
-  
+
   <div id="editorsPicks"></div>
   <div class="search-row">
     <input type="text" class="search-input" id="searchInput" placeholder='Search — e.g. "foster care reform" or "family treatment court"' autocomplete="off" />
@@ -50,6 +53,19 @@
     <span>Child Welfare News — powered by GNews + RSS</span>
     <span id="footerUpdate"></span>
   </footer>
+
+  <div class="modal-overlay" id="modalOverlay" onclick="closeAbout()">
+  <div class="modal" onclick="event.stopPropagation()">
+    <button class="modal-close" onclick="closeAbout()">✕</button>
+    <h2 class="modal-title">About Child Welfare News</h2>
+    <p class="modal-text">Child Welfare News is a free content aggregator bringing together news, research, and policy updates from across the child welfare ecosystem — so practitioners, researchers, and policymakers don't have to go looking across a dozen different sites to stay current.</p>
+    <p class="modal-text">Articles are pulled from trusted sources including The Imprint, the Annie E. Casey Foundation, Child Welfare Monitor, NCCPR, and Children's Rights, alongside broader news search.</p>
+    <p class="modal-text">Editor's Picks are manually curated to highlight the stories and analysis that matter most to the field.</p>
+    <div class="modal-links">
+      <a href="null" target="_blank" rel="noopener">Subscribe to the weekly digest →</a>
+    </div>
+  </div>
+</div>
 
 </div>
 <script src="js/app.js"></script>
