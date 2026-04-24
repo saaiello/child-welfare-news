@@ -23,6 +23,7 @@ const RSS_SOURCES = [
   { id: "cwmonitor", name: "Child Welfare Monitor", desc: "Policy analysis and child advocacy", url: "https://childwelfaremonitor.org/feed", badge: "b-monitor" },
   { id: "nccpr", name: "NCCPR", desc: "Child protection reform news and commentary", url: "https://www.nccprblog.org/feeds/posts/default?alt=rss", badge: "b-nccpr" },
   { id: "childrensrights", name: "Children's Rights", desc: "National advocacy and litigation updates", url: "https://childrensrights.org/feed", badge: "b-rights" },
+  { id: "substack", name: "Child Welfare News", desc: "Editorial picks and analysis", url: "https://childwelfarenews.substack.com/feed", badge: "b-substack" },
 ];
 
 const SOURCE_FILTERS = [
@@ -33,6 +34,7 @@ const SOURCE_FILTERS = [
   { id: "cwmonitor", label: "Child Welfare Monitor" },
   { id: "nccpr", label: "NCCPR" },
   { id: "childrensrights", label: "Children's Rights" },
+  { id: "substack", label: "CWN Editorial" },
 ];
 
 let activeTag = "All";
@@ -133,6 +135,7 @@ async function fetchGNews(q) {
       date: a.publishedAt ? a.publishedAt.slice(0, 10) : "",
       desc: a.description || "",
       url: a.url || "#",
+      image: a.image || null,
       badge: "b-default",
       sourceId: "gnews",
     }));
@@ -155,13 +158,15 @@ async function fetchFeed(source) {
     const xml = new DOMParser().parseFromString(text, "text/html");
     const items = Array.from(xml.querySelectorAll("item")).slice(0, 10);
     return items.map(item => {
-      const title = item.querySelector("title")?.textContent?.trim() || "Untitled";
+      const rawTitle = item.querySelector("title")?.textContent?.trim() || "Untitled";
+      const title = rawTitle.replace(/<!\[CDATA\[|\]\]>/g, "").trim();
       const link = item.querySelector("link")?.textContent?.trim() || "#";
       const rawDesc = item.querySelector("description")?.textContent || "";
       const desc = stripHTML(rawDesc).slice(0, 280);
       const pubDate = item.querySelector("pubDate")?.textContent?.trim() || "";
       const date = pubDate ? new Date(pubDate).toISOString().slice(0, 10) : "";
-      return { title, source: source.name, topic: inferTopic(title + " " + desc), date, desc, url: link, badge: source.badge, sourceId: source.id };
+      const image = item.querySelector("enclosure")?.getAttribute("url") || item.querySelector("image url")?.textContent?.trim() || null;
+      return { title, source: source.name, topic: inferTopic(title + " " + desc), date, desc, url: link, image: image, badge: source.badge, sourceId: source.id };
     });
   } catch (e) {
     return [];
@@ -193,15 +198,24 @@ function renderArticles() {
 }
 
 function cardHTML(a) {
+  const img = a.image
+    ? `<img class="card-thumb" src="${esc(a.image)}" alt="" loading="lazy" onerror="this.style.display='none'" />`
+    : `<div class="card-thumb card-thumb-placeholder"><span>${esc(a.source.charAt(0))}</span></div>`;
+
   return `<div class="article-card" onclick="window.open('${esc(a.url)}','_blank')">
-    <div class="card-meta">
-      <span class="source-badge ${a.badge}">${esc(a.source)}</span>
-      <span class="topic-pill">${esc(a.topic)}</span>
-      <span class="card-date">${fmtDate(a.date)}</span>
+    <div class="card-inner">
+      <div class="card-body">
+        <div class="card-meta">
+          <span class="source-badge ${a.badge}">${esc(a.source)}</span>
+          <span class="topic-pill">${esc(a.topic)}</span>
+          <span class="card-date">${fmtDate(a.date)}</span>
+        </div>
+        <p class="card-title">${esc(a.title)}</p>
+        ${a.desc ? `<p class="card-desc">${esc(a.desc)}</p>` : ""}
+        <a class="card-link" href="${esc(a.url)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">Read full article</a>
+      </div>
+      ${img}
     </div>
-    <p class="card-title">${esc(a.title)}</p>
-    ${a.desc ? `<p class="card-desc">${esc(a.desc)}</p>` : ""}
-    <a class="card-link" href="${esc(a.url)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">Read full article</a>
   </div>`;
 }
 
