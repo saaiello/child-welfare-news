@@ -212,7 +212,14 @@ function cardHTML(a) {
         </div>
         <p class="card-title">${esc(a.title)}</p>
         ${a.desc ? `<p class="card-desc">${esc(a.desc)}</p>` : ""}
-        <a class="card-link" href="${esc(a.url)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">Read full article</a>
+        <div class="card-actions">
+          <a class="card-link" href="${esc(a.url)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">Read full article</a>
+          <div class="share-buttons">
+            <a class="share-btn" href="mailto:?subject=${encodeURIComponent(a.title)}&body=${encodeURIComponent(a.url)}" onclick="event.stopPropagation()" title="Share via email">Email</a>
+            <a class="share-btn" href="https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(a.url)}" target="_blank" rel="noopener" onclick="event.stopPropagation()" title="Share on LinkedIn">LinkedIn</a>
+            <button class="share-btn" onclick="event.stopPropagation(); navigator.clipboard.writeText('${esc(a.url)}'); this.textContent='Copied!'; setTimeout(()=>this.textContent='Copy link',2000)">Copy link</button>
+          </div>
+        </div>
       </div>
       ${img}
     </div>
