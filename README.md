@@ -42,8 +42,11 @@ Weekly digest: [childwelfarenews.substack.com](https://childwelfarenews.substack
 ### Next
 
 - [ ] Brand colors across the site
+- [ ] Work on layout (add this month, last month)
+- [ ] tags are not all fully correct
 - [ ] Webinars tab
 - [ ] Podcasts tab
+- [ ] National & state tags
 
 ### Later
 
