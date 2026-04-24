@@ -37,6 +37,17 @@ const SOURCE_FILTERS = [
   { id: "substack", label: "CWN Editorial" },
 ];
 
+const EDITORS_PICKS = [
+  {
+    title: "August: When Child Welfare Chooses",
+    source: "Child Welfare News",
+    url: "https://childwelfarenews.substack.com/p/august-when-child-welfare-chooses",
+    note: "Why August is the hardest month in the system — and what it reveals about how we prioritize children.",
+    date: "2024-08-01",
+    image: null,
+  },
+];
+
 let activeTag = "All";
 let activeSource = "all";
 let allArticles = [];
@@ -265,7 +276,35 @@ document.getElementById("searchInput").addEventListener("keydown", e => {
   if (e.key === "Enter") runSearch();
 });
 
+function renderEditorsPicks() {
+  const section = document.getElementById("editorsPicks");
+  if (!EDITORS_PICKS.length) { section.style.display = "none"; return; }
+  section.style.display = "block";
+  section.innerHTML = `
+    <div class="picks-header">
+      <span class="picks-label">Editor's Picks</span>
+      <span class="picks-sub">Curated by the Child Welfare News team</span>
+    </div>
+    <div class="picks-grid">
+      ${EDITORS_PICKS.map(p => `
+        <div class="pick-card" onclick="window.open('${esc(p.url)}','_blank')">
+          ${p.image ? `<img class="pick-thumb" src="${esc(p.image)}" alt="" loading="lazy" onerror="this.style.display='none'" />` : ""}
+          <div class="pick-body">
+            <p class="pick-title">${esc(p.title)}</p>
+            <p class="pick-note">${esc(p.note)}</p>
+            <div class="pick-meta">
+              <span class="pick-source">${esc(p.source)}</span>
+              <span class="pick-date">${fmtDate(p.date)}</span>
+            </div>
+          </div>
+        </div>
+      `).join("")}
+    </div>
+  `;
+}
+
 // Init
 buildTags();
 buildSourceFilters();
+renderEditorsPicks();
 runSearch();
