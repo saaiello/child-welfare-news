@@ -69,6 +69,19 @@ const EDITORS_PICK = {
   isEditorsPick: true,
 };
 
+const STATE_NAMES = [
+  "Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado",
+  "Connecticut", "Delaware", "Florida", "Georgia", "Hawaii", "Idaho",
+  "Illinois", "Indiana", "Iowa", "Kansas", "Kentucky", "Louisiana",
+  "Maine", "Maryland", "Massachusetts", "Michigan", "Minnesota",
+  "Mississippi", "Missouri", "Montana", "Nebraska", "Nevada",
+  "New Hampshire", "New Jersey", "New Mexico", "New York",
+  "North Carolina", "North Dakota", "Ohio", "Oklahoma", "Oregon",
+  "Pennsylvania", "Rhode Island", "South Carolina", "South Dakota",
+  "Tennessee", "Texas", "Utah", "Vermont", "Virginia", "Washington",
+  "West Virginia", "Wisconsin", "Wyoming"
+];
+
 // ── STATE ────────────────────────────────────────────────────────────────────
 let activeTag = "All";
 let activeSource = "all";
@@ -203,6 +216,8 @@ async function fetchGNews(q) {
       badge: "b-default",
       sourceId: "gnews",
       type: "Article",
+      type: "Article",
+      state: detectState(a.title + " " + (a.description || "")),
     }));
   } catch(e) { return []; }
 }
@@ -229,7 +244,7 @@ async function fetchFeed(source) {
       const pubDate = item.querySelector("pubDate")?.textContent?.trim() || "";
       const date = pubDate ? new Date(pubDate).toISOString().slice(0, 10) : "";
       const image = item.querySelector("enclosure")?.getAttribute("url") || item.querySelector("image url")?.textContent?.trim() || null;
-      return { title, source: source.name, topic: inferTopic(title + " " + desc), date, desc, url: link, image, badge: source.badge, sourceId: source.id, type: "Article" };
+      return { title, source: source.name, topic: inferTopic(title + " " + desc), date, desc, state: detectState(title + " " + desc), url: link, image, badge: source.badge, sourceId: source.id, type: "Article" };
     });
   } catch(e) { return []; }
 }
@@ -241,7 +256,7 @@ async function fetchSheet() {
     const rows = text.trim().split("\n").slice(1);
     return rows.filter(r => r.trim()).map(row => {
       const cols = parseCSVRow(row);
-      const [title, url, source, date, topic, note] = cols;
+      const [title, url, source, date, topic, note, state] = cols;
       return {
         title: title?.trim() || "Untitled",
         url: url?.trim() || "#",
@@ -249,6 +264,7 @@ async function fetchSheet() {
         date: date?.trim() || "",
         topic: topic?.trim() || "General",
         desc: note?.trim() || "",
+        state: state?.trim() || detectState(title + " " + (note || "")),
         image: null,
         badge: "b-substack",
         sourceId: "curated",
@@ -265,7 +281,7 @@ async function fetchFederalSheet() {
     const rows = text.trim().split("\n").slice(1);
     return rows.filter(r => r.trim()).map(row => {
       const cols = parseCSVRow(row);
-      const [title, url, source, date, topic, note] = cols;
+      const [title, url, source, date, topic, note, state] = cols;
       return {
         title: title?.trim() || "Untitled",
         url: url?.trim() || "#",
@@ -273,6 +289,7 @@ async function fetchFederalSheet() {
         date: (() => { try { const d = new Date(date?.trim()); return isNaN(d) ? "" : d.toISOString().slice(0, 10); } catch(e) { return ""; } })(),
         topic: "Federal",
         desc: note?.trim() || "",
+        state: state?.trim() || detectState(title + " " + (note || "")),
         image: null,
         badge: "b-acf",
         sourceId: "acf",
@@ -302,6 +319,8 @@ function renderArticles() {
 
   let filtered = [...allArticles];
   if (activeSource !== "all") filtered = filtered.filter(a => a.sourceId === activeSource);
+  const stateFilter = document.getElementById("stateSelect")?.value;
+  if (stateFilter) filtered = filtered.filter(a => a.state === stateFilter);
   if (sort === "topic") filtered.sort((a, b) => a.topic.localeCompare(b.topic));
   else filtered.sort((a, b) => new Date(b.date) - new Date(a.date));
 
@@ -332,6 +351,7 @@ function articleCardHTML(a) {
       <div class="article-card-meta">
         <span class="source-badge ${a.badge}">${esc(a.source)}</span>
         <span class="type-badge">${esc(a.type || "Article")}</span>
+        ${a.state ? `<span class="state-badge">${esc(a.state)}</span>` : ""}
         <span class="card-date">${fmtDate(a.date)}</span>
       </div>
       <p class="article-card-title">${esc(a.title)}</p>
@@ -348,6 +368,11 @@ function articleCardHTML(a) {
     ${img}
   </div>`;
 }
+
+  function filterByState() {
+    currentPage = 1;
+    renderArticles();
+  }
 
 // ── PAGINATION ───────────────────────────────────────────────────────────────
 function renderPagination(totalPages) {
@@ -378,22 +403,33 @@ function renderDigestSections() {
   const thisMonth = today.slice(0, 7);
 
   const todayItems = allArticles.filter(a => a.date === today).slice(0, 5);
-  const monthItems = allArticles.filter(a => a.date && a.date.startsWith(thisMonth) && a.date !== today).slice(0, 8);
-  const researchItems = allArticles.filter(a => ["Research", "Policy & legislation"].includes(a.topic)).slice(0, 5);
+  const monthItems = allArticles.filter(a => a.date && a.date.startsWith(thisMonth) && a.date !== today).slice(0, 5);
+  const researchItems = allArticles.filter(a =>
+    ["Research", "Policy & legislation"].includes(a.topic) &&
+    ["casey", "cwmonitor", "nccpr", "childrensrights", "curated", "chapinhall", "childtrends", "urban", "firstfocus"].includes(a.sourceId)
+  ).slice(0, 5);
   const fedsItems = allArticles.filter(a => a.sourceId === "acf").slice(0, 5);
 
-  renderDigestList("todayList", todayItems);
-  renderDigestList("monthList", monthItems);
-  renderDigestList("researchList", researchItems);
-  renderDigestList("fedsList", fedsItems);
+  renderDigestList("todayList", todayItems, "today");
+  renderDigestList("monthList", monthItems, "month");
+  renderDigestList("researchList", researchItems, "research");
+  renderDigestList("fedsList", fedsItems, "feds");
 }
 
-function renderDigestList(id, items) {
+function renderDigestList(id, items, type) {
   const el = document.getElementById(id);
   if (!items.length) {
     el.innerHTML = `<p style="font-size:13px;color:var(--text-tertiary);padding:1rem 0;font-style:italic;">No items to show yet.</p>`;
     return;
   }
+
+  const seeAllLabels = {
+    today: "See all today's news",
+    month: "See everything this month",
+    research: "See all research & policy",
+    feds: "See all federal guidance",
+  };
+
   el.innerHTML = items.map(a => `
     <div class="digest-item" onclick="window.open('${esc(a.url)}','_blank')">
       <span class="digest-arrow">→</span>
@@ -402,7 +438,7 @@ function renderDigestList(id, items) {
         <span class="digest-item-meta">${esc(a.source)} · ${fmtDate(a.date)}</span>
       </div>
     </div>
-  `).join("");
+  `).join("") + `<div class="digest-see-all-wrap"><a class="digest-see-all" href="#articles" onclick="scrollToArticles()">${seeAllLabels[type]} →</a></div>`;
 }
 
 // ── SUBMIT FORM ──────────────────────────────────────────────────────────────
@@ -456,6 +492,15 @@ function scrollToArticles() {
 }
 
 // ── UTILITIES ─────────────────────────────────────────────────────────────────
+function detectState(text) {
+  if (!text) return "";
+  const t = text.toLowerCase();
+  for (const state of STATE_NAMES) {
+    if (t.includes(state.toLowerCase())) return state;
+  }
+  return "";
+}
+
 function inferTopic(t) {
   t = t.toLowerCase();
   if (t.includes("foster")) return "Foster care";

@@ -56,14 +56,12 @@
         <div class="digest-list" id="todayList">
           <div class="state-box"><div class="spinner"></div></div>
         </div>
-        <a class="digest-see-all" href="#articles" onclick="scrollToArticles()">See all today's news →</a>
       </div>
       <div class="digest-col">
         <div class="digest-col-title"><span class="hl">this month</span></div>
         <div class="digest-list" id="monthList">
           <div class="state-box"><div class="spinner"></div></div>
         </div>
-        <a class="digest-see-all" href="#articles" onclick="scrollToArticles()">See everything this month →</a>
       </div>
     </div>
   </section>
@@ -128,19 +126,73 @@
 
   <!-- ALL ARTICLES -->
   <section id="articles">
-    <div class="articles-header">
-      <div class="articles-title"><span class="hl">all articles</span></div>
-      <div class="articles-controls">
-        <span class="results-count" id="resultsCount"></span>
-        <span class="api-pill loading" id="apiPill">Loading...</span>
-        <select class="sort-select" id="sortSelect" onchange="renderArticles()">
-          <option value="date">Newest first</option>
-          <option value="topic">By topic</option>
-        </select>
-      </div>
+  <div class="articles-header">
+    <div class="articles-title"><span class="hl">all articles</span></div>
+    <div class="articles-controls">
+      <span class="results-count" id="resultsCount"></span>
+      <span class="api-pill loading" id="apiPill">Loading...</span>
+      <select class="sort-select" id="stateSelect" onchange="filterByState()">
+        <option value="">All States</option>
+        <option value="National">National</option>
+        <option value="Alabama">Alabama</option>
+        <option value="Alaska">Alaska</option>
+        <option value="Arizona">Arizona</option>
+        <option value="Arkansas">Arkansas</option>
+        <option value="California">California</option>
+        <option value="Colorado">Colorado</option>
+        <option value="Connecticut">Connecticut</option>
+        <option value="Delaware">Delaware</option>
+        <option value="Florida">Florida</option>
+        <option value="Georgia">Georgia</option>
+        <option value="Hawaii">Hawaii</option>
+        <option value="Idaho">Idaho</option>
+        <option value="Illinois">Illinois</option>
+        <option value="Indiana">Indiana</option>
+        <option value="Iowa">Iowa</option>
+        <option value="Kansas">Kansas</option>
+        <option value="Kentucky">Kentucky</option>
+        <option value="Louisiana">Louisiana</option>
+        <option value="Maine">Maine</option>
+        <option value="Maryland">Maryland</option>
+        <option value="Massachusetts">Massachusetts</option>
+        <option value="Michigan">Michigan</option>
+        <option value="Minnesota">Minnesota</option>
+        <option value="Mississippi">Mississippi</option>
+        <option value="Missouri">Missouri</option>
+        <option value="Montana">Montana</option>
+        <option value="Nebraska">Nebraska</option>
+        <option value="Nevada">Nevada</option>
+        <option value="New Hampshire">New Hampshire</option>
+        <option value="New Jersey">New Jersey</option>
+        <option value="New Mexico">New Mexico</option>
+        <option value="New York">New York</option>
+        <option value="North Carolina">North Carolina</option>
+        <option value="Northv Dakota">North Dakota</option>
+        <option value="Ohio">Ohio</option>
+        <option value="Oklahoma">Oklahoma</option>
+        <option value="Oregon">Oregon</option>
+        <option value="Pennsylvania">Pennsylvania</option>
+        <option value="Rhode Island">Rhode Island</option>
+        <option value="South Carolina">South Carolina</option>
+        <option value="South Dakota">South Dakota</option>
+        <option value="Tennessee">Tennessee</option>
+        <option value="Texas">Texas</option>
+        <option value="Utah">Utah</option>
+        <option value="Vermont">Vermont</option>
+        <option value="Virginia">Virginia</option>
+        <option value="Washington">Washington</option>
+        <option value="West Virginia">West Virginia</option>
+        <option value="Wisconsin">Wisconsin</option>
+        <option value="Wyoming">Wyoming</option>
+      </select>
+      <select class="sort-select" id="sortSelect" onchange="renderArticles()">
+        <option value="date">Newest first</option>
+        <option value="topic">By topic</option>
+      </select>
     </div>
-    <div id="articleGrid"></div>
-    <div class="pagination" id="pagination"></div>
+  </div>
+  <div id="articleGrid"></div>
+  <div class="pagination" id="pagination"></div>
   </section>
 
   <!-- MISSING SOMETHING -->
@@ -203,9 +255,12 @@
   <div class="modal" onclick="event.stopPropagation()">
     <button class="modal-close" onclick="closeAbout()">✕</button>
     <h2 class="modal-title">About Child Welfare News</h2>
-    <p class="modal-text">Child Welfare News is a free content aggregator bringing together news, research, and policy updates from across the child welfare ecosystem — so practitioners, researchers, and policymakers don't have to go looking across a dozen different sites to stay current.</p>
-    <p class="modal-text">Articles are pulled from trusted sources including The Imprint, the Annie E. Casey Foundation, Child Welfare Monitor, NCCPR, and Children's Rights, alongside broader news search.</p>
-    <p class="modal-text">Stay current on child welfare news — bookmark this site</p>
+    <p class="modal-text">Child Welfare News is a free content aggregator bringing together news, research, toolkits and policy updates from across the child welfare ecosystem — so practitioners, researchers, and policymakers don't have to go looking across a dozen different sites to stay current.</p>
+    <p class="modal-text">Articles are pulled from sources including ACF, The Imprint, the Annie E. Casey Foundation, First Focus, Child Welfare Monitor, and more, alongside broader news search.</p>
+      <div class="modal-mission">
+      <p class="modal-mission-text">This project was born out of a need for accessible, uncensored information. Child Welfare News exists to ensure that access to information, including equity, justice, and systemic change, remains open, transparent, and available to everyone, no matter the political climate.</p>
+      </div>
+      <p class="modal-text">Stay current on child welfare news — bookmark this site</p>
   </div>
 </div>
 
