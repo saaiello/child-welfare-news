@@ -260,7 +260,7 @@ async function fetchSheet() {
         title: title?.trim() || "Untitled",
         url: url?.trim() || "#",
         source: source?.trim() || "Curated",
-        date: date?.trim() || "",
+        date: (() => { try { const d = new Date(date?.trim()); return isNaN(d) ? "" : d.toISOString().slice(0, 10); } catch(e) { return ""; } })(),
         topic: topic?.trim() || "General",
         desc: note?.trim() || "",
         state: state?.trim() || detectState(title + " " + (note || "")),
@@ -455,7 +455,7 @@ async function submitForm() {
   if (!title || !url) { alert("Please fill in at least a title and URL."); return; }
 
   try {
-    const baseUrl = "https://docs.google.com/forms/d/e/1FAIpQLSfRJ8JTuz4icXf-X8M9k9qN_S5gfsx0fqvNW4zSnisCulkDig/viewform";
+    const formEndpoint = "https://docs.google.com/forms/d/e/1FAIpQLSfRJ8JTuz4icXf-X8M9k9qN_S5gfsx0fqvNW4zSnisCulkDig/formResponse";
     const params = new URLSearchParams();
     params.append("entry.1396869931", title);
     params.append("entry.1336107118", url);
@@ -466,7 +466,12 @@ async function submitForm() {
     params.append("entry.1501976415", name);
     params.append("entry.1817029821", email);
     params.append("entry.486365505", notes);
-    window.open(`${baseUrl}?${params.toString()}`, "_blank");
+    await fetch(formEndpoint, {
+      method: "POST",
+      mode: "no-cors",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: params.toString(),
+    });
   } catch(e) {}
 
   document.getElementById("submitTitle").value = "";
