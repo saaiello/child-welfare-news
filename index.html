@@ -6,59 +6,193 @@
   <title>Child Welfare News</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500&family=DM+Serif+Display&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/styles.css" />
 </head>
+
 <body>
+<!-- ANNOUNCEMENT BAR -->
+<div class="announce-bar">
+  New weekly digest now on Substack — <a href="https://childwelfarenews.substack.com" target="_blank">subscribe free →</a>
+</div>
+
+<!-- MASTHEAD -->
+<header class="masthead">
+  <div class="masthead-inner">
+    <div class="masthead-logo">child welfare news <span>+ more</span></div>
+    <nav class="masthead-nav">
+      <a class="nav-link" href="#today">Today</a>
+      <a class="nav-link" href="#webinars">Webinars</a>
+      <a class="nav-link" href="#podcasts">Podcasts</a>
+      <a class="nav-link" href="#research">Research</a>
+      <a class="nav-link" href="#articles">All Articles</a>
+      <button class="about-btn" onclick="openAbout()">About</button>
+    </nav>
+  </div>
+</header>
+
 <div class="page">
 
-  <header class="masthead">
-    <div class="masthead-inner">
+  <!-- HERO -->
+  <section class="hero" id="featuredHero">
+    <div class="hero-body">
+      <div class="hero-eyebrow">
+        <span class="hero-label" id="heroLabel">Featured Story</span>
+        <span class="hero-source" id="heroSource"></span>
+        <span class="hero-date" id="heroDate"></span>
+      </div>
+      <p class="hero-title" id="heroTitle">Loading featured story...</p>
+      <p class="hero-note" id="heroNote"></p>
+      <a class="hero-link" id="heroLink" href="#" target="_blank" rel="noopener">Read More →</a>
+    </div>
+    <div id="heroImageWrap"></div>
+  </section>
+
+  <!-- TODAY'S NEWS + THIS MONTH -->
+  <section class="site-section" id="today">
+    <div class="digest-grid">
+      <div class="digest-col">
+        <div class="digest-col-title"><span class="hl">today's news</span></div>
+        <div class="digest-list" id="todayList">
+          <div class="state-box"><div class="spinner"></div></div>
+        </div>
+        <a class="digest-see-all" href="#articles" onclick="scrollToArticles()">See all today's news →</a>
+      </div>
+      <div class="digest-col">
+        <div class="digest-col-title"><span class="hl">this month</span></div>
+        <div class="digest-list" id="monthList">
+          <div class="state-box"><div class="spinner"></div></div>
+        </div>
+        <a class="digest-see-all" href="#articles" onclick="scrollToArticles()">See everything this month →</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- WEBINARS + PODCASTS -->
+  <section class="site-section" id="webinars">
+    <div class="media-grid">
+      <div class="media-col">
+        <div class="media-col-title">webinars</div>
+        <div class="media-filter-row">
+          <button class="tag active" id="webinarTagUpcoming" onclick="switchWebinarTab('upcoming')">Upcoming</button>
+          <button class="tag" id="webinarTagRecorded" onclick="switchWebinarTab('recorded')">Recorded</button>
+        </div>
+        <div class="media-list" id="webinarUpcoming">
+          <p class="media-placeholder">Webinar sources coming soon. <a href="#missing">Submit one →</a></p>
+        </div>
+        <div class="media-list" id="webinarArchive" style="display:none;">
+          <p class="media-placeholder">Recorded webinars will appear here.</p>
+        </div>
+        <a class="media-see-all" href="#missing">Submit a webinar →</a>
+      </div>
+
+      <div class="media-col" id="podcasts">
+        <div class="media-col-title">podcasts</div>
+        <div class="media-list" id="podcastList">
+          <p class="media-placeholder">Podcast sources coming soon. <a href="#missing">Submit one →</a></p>
+        </div>
+        <a class="media-see-all" href="#missing">Submit a podcast →</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- RESEARCH & POLICY + FROM THE FEDS -->
+  <section class="site-section" id="research">
+    <div class="research-grid">
       <div>
-        <h1 class="masthead-title">Child Welfare News</h1>
-        <p class="masthead-desc">Latest news, research, and policy across the child welfare ecosystem</p>
+        <div class="digest-col-title"><span class="hl">research & policy</span></div>
+        <div class="digest-list" id="researchList">
+          <div class="state-box"><div class="spinner"></div></div>
+        </div>
       </div>
-      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;">
-        <div class="masthead-date" id="todayDate"></div>
-      <button class="about-btn" onclick="openAbout()">About</button>
+      <div>
+        <div class="digest-col-title"><span class="feds-label">📌 <span class="hl">from the feds</span></span></div>
+        <div class="digest-list" id="fedsList">
+          <div class="state-box"><div class="spinner"></div></div>
+        </div>
       </div>
     </div>
-  </header>
+  </section>
 
-  <div class="hero-row">
-    <div id="featuredStory"></div>
-    <div id="editorsPicks"></div>
-  </div>
-
-  <div class="search-row">
-    <input type="text" class="search-input" id="searchInput" placeholder='Search — e.g. "foster care reform" or "family treatment court"' autocomplete="off" />
-    <button class="search-btn" id="searchBtn" onclick="runSearch()">Search</button>
-  </div>
-
-  <div class="tag-row" id="tagRow"></div>
-
-  <div class="source-filter-label">Filter by source</div>
-  <div class="tag-row" id="sourceFilterRow"></div>
-
-  <div class="status-bar">
-    <div style="display:flex;align-items:center;gap:10px;">
-      <span class="results-count" id="resultsCount"></span>
-      <span class="api-pill loading" id="apiPill">Loading...</span>
+  <!-- SEARCH -->
+  <div class="search-section" id="search">
+    <div class="search-section-title">Search</div>
+    <div class="search-row">
+      <input type="text" class="search-input" id="searchInput" placeholder="Search articles, reports, webinars…" autocomplete="off" />
+      <button class="search-btn" id="searchBtn" onclick="runSearch()">Search</button>
     </div>
-    <select class="sort-select" id="sortSelect" onchange="renderArticles()">
-      <option value="date">Most recent</option>
-      <option value="topic">By topic</option>
-    </select>
+    <div class="search-filters" id="sourceFilterRow"></div>
   </div>
 
-  <div id="articleGrid"></div>
+  <!-- TAG ROW -->
 
-  <footer class="footer">
-    <span>Child Welfare News — powered by GNews + RSS</span>
+  <!-- ALL ARTICLES -->
+  <section id="articles">
+    <div class="articles-header">
+      <div class="articles-title"><span class="hl">all articles</span></div>
+      <div class="articles-controls">
+        <span class="results-count" id="resultsCount"></span>
+        <span class="api-pill loading" id="apiPill">Loading...</span>
+        <select class="sort-select" id="sortSelect" onchange="renderArticles()">
+          <option value="date">Newest first</option>
+          <option value="topic">By topic</option>
+        </select>
+      </div>
+    </div>
+    <div id="articleGrid"></div>
+    <div class="pagination" id="pagination"></div>
+  </section>
+
+  <!-- MISSING SOMETHING -->
+  <div class="missing-section" id="missing">
+    <div class="missing-title">missing <span>something?</span></div>
+    <div class="missing-sub">Submit an article, report, webinar, or podcast you think belongs here.</div>
+    <div class="missing-form" id="submitForm">
+      <div class="form-field">
+        <label class="form-label">Article Title</label>
+        <input type="text" class="form-input" id="submitTitle" placeholder="Title of the resource" />
+      </div>
+      <div class="form-field">
+        <label class="form-label">URL</label>
+        <input type="text" class="form-input" id="submitUrl" placeholder="https://..." />
+      </div>
+      <div class="form-field">
+        <label class="form-label">Source</label>
+        <input type="text" class="form-input" id="submitSource" placeholder="e.g. Urban Institute" />
+      </div>
+      <div class="form-field">
+        <label class="form-label">Date Published</label>
+        <input type="text" class="form-input" id="submitDate" placeholder="YYYY-MM-DD" />
+      </div>
+      <div class="form-field full">
+        <label class="form-label">Tags</label>
+        <div class="form-tags" id="formTags"></div>
+      </div>
+      <div class="form-field full">
+        <label class="form-label">Your Name (optional)</label>
+        <input type="text" class="form-input" id="submitName" placeholder="Your name" />
+      </div>
+      <div class="form-field full">
+        <button class="form-submit" onclick="submitForm()">Submit for Review →</button>
+        <div class="form-success" id="formSuccess">✓ Thank you! Your submission has been received.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SITE FOOTER -->
+  <footer class="site-footer">
+    <span>Child Welfare News — GNews + RSS</span>
+    <div class="footer-links">
+      <a href="https://childwelfarenews.substack.com" target="_blank">Substack</a>
+      <a href="#" onclick="openAbout(); return false;">About</a>
+    </div>
     <span id="footerUpdate"></span>
   </footer>
 
-  <div class="modal-overlay" id="modalOverlay" onclick="closeAbout()">
+</div>
+
+<!-- ABOUT MODAL -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeAbout()">
   <div class="modal" onclick="event.stopPropagation()">
     <button class="modal-close" onclick="closeAbout()">✕</button>
     <h2 class="modal-title">About Child Welfare News</h2>
@@ -66,12 +200,12 @@
     <p class="modal-text">Articles are pulled from trusted sources including The Imprint, the Annie E. Casey Foundation, Child Welfare Monitor, NCCPR, and Children's Rights, alongside broader news search.</p>
     <p class="modal-text">Editor's Picks are manually curated to highlight the stories and analysis that matter most to the field.</p>
     <div class="modal-links">
-      <a href="null" target="_blank" rel="noopener">Subscribe to the weekly digest →</a>
+      <a href="https://childwelfarenews.substack.com" target="_blank" rel="noopener">Subscribe to the weekly digest →</a>
     </div>
   </div>
 </div>
 
-</div>
 <script src="js/app.js"></script>
+
 </body>
 </html>
