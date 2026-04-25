@@ -467,7 +467,42 @@ async function submitForm() {
   formData.append("entry.486365505", notes);
 
   try {
-    await fetch(FORM_URL, { method: "POST", mode: "no-cors", body: formData });
+  const params = new URLSearchParams();
+  params.append("entry.1396869931", title);
+  params.append("entry.1336107118", url);
+  params.append("entry.1380709668", source);
+  params.append("entry.858367272", date);
+  params.append("entry.1967969508", tags);
+  params.append("entry.300271338", state);
+  params.append("entry.1501976415", name);
+  params.append("entry.1817029821", email);
+  params.append("entry.486365505", notes);
+
+  const iframe = document.createElement("iframe");
+  iframe.style.display = "none";
+  iframe.name = "hidden_iframe";
+  document.body.appendChild(iframe);
+
+  const form = document.createElement("form");
+  form.method = "POST";
+  form.action = "https://docs.google.com/forms/d/e/1FAIpQLSfRJ8JTuz4icXf-X8M9k9qN_S5gfsx0fqvNW4zSnisCulkDig/formResponse";
+  form.target = "hidden_iframe";
+
+  for (const [key, value] of params.entries()) {
+    const input = document.createElement("input");
+    input.type = "hidden";
+    input.name = key;
+    input.value = value;
+    form.appendChild(input);
+  }
+
+  document.body.appendChild(form);
+  form.submit();
+
+  setTimeout(() => {
+    document.body.removeChild(iframe);
+    document.body.removeChild(form);
+  }, 2000);
   } catch(e) {}
 
   document.getElementById("submitTitle").value = "";
