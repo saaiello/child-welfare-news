@@ -456,15 +456,15 @@ async function submitForm() {
   if (!title || !url) { alert("Please fill in at least a title and URL."); return; }
 
   const formData = new FormData();
-  formData.append("entry.1", title);
-  formData.append("entry.2", url);
-  formData.append("entry.3", source);
-  formData.append("entry.4", date);
-  formData.append("entry.5", tags);
-  formData.append("entry.6", state);
-  formData.append("entry.7", name);
-  formData.append("entry.8", email);
-  formData.append("entry.9", notes);
+  formData.append("entry.1396869931", title);
+  formData.append("entry.1336107118", url);
+  formData.append("entry.1380709668", source);
+  formData.append("entry.858367272", date);
+  formData.append("entry.1967969508", tags);
+  formData.append("entry.300271338", state);
+  formData.append("entry.1501976415", name);
+  formData.append("entry.1817029821", email);
+  formData.append("entry.486365505", notes);
 
   try {
     await fetch(FORM_URL, { method: "POST", mode: "no-cors", body: formData });
