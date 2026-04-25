@@ -3,7 +3,7 @@ const API_KEY = "92964dfef8d957bf56e23ee2e3c3a354";
 const PROXY = "https://corsproxy.io/?";
 const GNEWS_BASE = PROXY + encodeURIComponent("https://gnews.io/api/v4/search");
 const SHEET_ID = "1G7QeP0_gE79KBAgDzcgJ79r6PWHxhy-Blywb9eLlREM";
-const SHEET_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&sheet=live`;
+const SHEET_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=0`;
 const FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSfRJ8JTuz4icXf-X8M9k9qN_S5gfsx0fqvNW4zSnisCulkDig/formResponse";
 const FEDERAL_SHEET_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=207882433`;
 
@@ -235,7 +235,7 @@ async function fetchFeed(source) {
 
 async function fetchSheet() {
   try {
-    const res = await fetch(PROXY + encodeURIComponent(SHEET_URL));
+    const res = await fetch(PROXY + encodeURIComponent(SHEET_URL + "&t=" + Date.now()));
     const text = await res.text();
     const rows = text.trim().split("\n").slice(1);
     return rows.filter(r => r.trim()).map(row => {
