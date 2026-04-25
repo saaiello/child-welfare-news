@@ -3,8 +3,9 @@ const API_KEY = "92964dfef8d957bf56e23ee2e3c3a354";
 const PROXY = "https://corsproxy.io/?";
 const GNEWS_BASE = PROXY + encodeURIComponent("https://gnews.io/api/v4/search");
 const SHEET_ID = "1G7QeP0_gE79KBAgDzcgJ79r6PWHxhy-Blywb9eLlREM";
-const SHEET_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&sheet=Sheet1`;
+const SHEET_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&sheet=live`;
 const FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSfRJ8JTuz4icXf-X8M9k9qN_S5gfsx0fqvNW4zSnisCulkDig/formResponse";
+const FEDERAL_SHEET_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=207882433`;
 
 const TOPICS = [
   { label: "All", query: "child welfare" },
@@ -152,10 +153,11 @@ async function runSearch() {
   const manual = document.getElementById("searchInput").value.trim();
   const q = manual || (TOPICS.find(t => t.label === activeTag) || TOPICS[0]).query;
 
-  const [gnewsResult, rssResult, sheetResult] = await Promise.allSettled([
+  const [gnewsResult, rssResult, sheetResult, federalSheetResult] = await Promise.allSettled([
     fetchGNews(q),
     rssLoaded ? Promise.resolve([]) : fetchAllRSS(),
     fetchSheet(),
+    fetchFederalSheet(),
   ]);
 
   if (gnewsResult.status === "fulfilled") allArticles.push(...gnewsResult.value);
@@ -168,7 +170,8 @@ async function runSearch() {
     allArticles.push(...window._rssCache);
   }
 
-  if (sheetResult.status === "fulfilled") allArticles.push(...sheetResult.value);
+if (sheetResult.status === "fulfilled") allArticles.push(...sheetResult.value);
+  if (federalSheetResult.status === "fulfilled") allArticles.push(...federalSheetResult.value);
 
   allArticles.sort((a, b) => new Date(b.date) - new Date(a.date));
 
@@ -177,7 +180,9 @@ async function runSearch() {
   updateFooter();
   currentPage = 1;
   renderArticles();
+  setTimeout(() => {
   renderDigestSections();
+  }, 100);
   btn.disabled = false;
 }
 
@@ -247,6 +252,30 @@ async function fetchSheet() {
         badge: "b-substack",
         sourceId: "curated",
         type: "Curated",
+      };
+    }).filter(a => a.title && a.url && a.url !== "#");
+  } catch(e) { return []; }
+}
+
+async function fetchFederalSheet() {
+  try {
+    const res = await fetch(PROXY + encodeURIComponent(FEDERAL_SHEET_URL + "&t=" + Date.now()));
+    const text = await res.text();
+    const rows = text.trim().split("\n").slice(1);
+    return rows.filter(r => r.trim()).map(row => {
+      const cols = parseCSVRow(row);
+      const [title, url, source, date, topic, note] = cols;
+      return {
+        title: title?.trim() || "Untitled",
+        url: url?.trim() || "#",
+        source: source?.trim() || "ACF",
+        date: (() => { try { const d = new Date(date?.trim()); return isNaN(d) ? "" : d.toISOString().slice(0, 10); } catch(e) { return ""; } })(),
+        topic: "Federal",
+        desc: note?.trim() || "",
+        image: null,
+        badge: "b-acf",
+        sourceId: "acf",
+        type: "Federal",
       };
     }).filter(a => a.title && a.url && a.url !== "#");
   } catch(e) { return []; }
