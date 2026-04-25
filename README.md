@@ -4,8 +4,6 @@ A content aggregator pulling child welfare news articles from multiple sources i
 
 Live site: [childwelfarenews.github.io/child-welfare-news](https://saaiello.github.io/child-welfare-news)
 
-Weekly digest: [childwelfarenews.substack.com](https://childwelfarenews.substack.com)
-
 ---
 
 ## What it does
@@ -42,8 +40,11 @@ Weekly digest: [childwelfarenews.substack.com](https://childwelfarenews.substack
 ### Next
 
 - [ ] Brand colors across the site
+- [ ] Work on layout (add this month, last month)
+- [ ] tags are not all fully correct
 - [ ] Webinars tab
 - [ ] Podcasts tab
+- [ ] National & state tags
 
 ### Later
 
