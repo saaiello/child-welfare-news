@@ -450,6 +450,7 @@ async function submitForm() {
   const name = document.getElementById("submitName").value.trim();
   const email = document.getElementById("submitEmail").value.trim();
   const notes = document.getElementById("submitNotes").value.trim();
+  const state = document.getElementById("submitState").value.trim();
   const tags = selectedFormTags.join(", ");
 
   if (!title || !url) { alert("Please fill in at least a title and URL."); return; }
@@ -460,9 +461,10 @@ async function submitForm() {
   formData.append("entry.3", source);
   formData.append("entry.4", date);
   formData.append("entry.5", tags);
-  formData.append("entry.6", name);
-  formData.append("entry.7", email);
-  formData.append("entry.8", notes);
+  formData.append("entry.6", state);
+  formData.append("entry.7", name);
+  formData.append("entry.8", email);
+  formData.append("entry.9", notes);
 
   try {
     await fetch(FORM_URL, { method: "POST", mode: "no-cors", body: formData });
@@ -475,6 +477,7 @@ async function submitForm() {
   document.getElementById("submitName").value = "";
   document.getElementById("submitEmail").value = "";
   document.getElementById("submitNotes").value = "";
+  document.getElementById("submitState").value = "";
   selectedFormTags = [];
   document.querySelectorAll(".form-tag").forEach(t => t.classList.remove("selected"));
 
