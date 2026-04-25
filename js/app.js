@@ -29,7 +29,7 @@ const RSS_SOURCES = [
   { id: "casey", name: "Annie E. Casey Foundation", desc: "Research & policy", url: "https://www.aecf.org/blog/rss.xml", badge: "b-casey" },
   { id: "cwmonitor", name: "Child Welfare Monitor", desc: "Policy analysis", url: "https://childwelfaremonitor.org/feed", badge: "b-monitor" },
   { id: "nccpr", name: "NCCPR", desc: "Reform news", url: "https://www.nccprblog.org/feeds/posts/default?alt=rss", badge: "b-nccpr" },
-  { id: "childrensrights", name: "Children's Rights", desc: "Advocacy updates", url: "https://childrensrights.org/feed", badge: "b-rights" },
+  { id: "firstfocus", name: "First Focus on Children", desc: "Child advocacy and policy", url: "https://firstfocus.org/feed", badge: "b-rights" },
 ];
 
 const SOURCE_FILTERS = [
@@ -40,8 +40,9 @@ const SOURCE_FILTERS = [
   { id: "casey", label: "Casey Foundation" },
   { id: "cwmonitor", label: "Child Welfare Monitor" },
   { id: "nccpr", label: "NCCPR" },
-  { id: "childrensrights", label: "Children's Rights" },
+  { id: "firstfocus", label: "First Focus" },
   { id: "curated", label: "Curated" },
+  { id: "acf", label: "Federal" },
 ];
 
 const CONTENT_TYPES = ["Article", "Webinar", "Podcast", "Research", "Federal"];
@@ -411,6 +412,8 @@ async function submitForm() {
   const source = document.getElementById("submitSource").value.trim();
   const date = document.getElementById("submitDate").value.trim();
   const name = document.getElementById("submitName").value.trim();
+  const email = document.getElementById("submitEmail").value.trim();
+  const notes = document.getElementById("submitNotes").value.trim();
   const tags = selectedFormTags.join(", ");
 
   if (!title || !url) { alert("Please fill in at least a title and URL."); return; }
@@ -422,6 +425,8 @@ async function submitForm() {
   formData.append("entry.4", date);
   formData.append("entry.5", tags);
   formData.append("entry.6", name);
+  formData.append("entry.7", email);
+  formData.append("entry.8", notes);
 
   try {
     await fetch(FORM_URL, { method: "POST", mode: "no-cors", body: formData });
@@ -432,6 +437,8 @@ async function submitForm() {
   document.getElementById("submitSource").value = "";
   document.getElementById("submitDate").value = "";
   document.getElementById("submitName").value = "";
+  document.getElementById("submitEmail").value = "";
+  document.getElementById("submitNotes").value = "";
   selectedFormTags = [];
   document.querySelectorAll(".form-tag").forEach(t => t.classList.remove("selected"));
 
