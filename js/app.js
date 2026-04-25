@@ -43,6 +43,8 @@ const SOURCE_FILTERS = [
   { id: "curated", label: "Curated" },
 ];
 
+const CONTENT_TYPES = ["Article", "Webinar", "Podcast", "Research", "Federal"];
+
 const FEATURED = {
   label: "Featured Story",
   title: "August: When Child Welfare Chooses",
@@ -116,16 +118,16 @@ function buildSourceFilters() {
 function buildFormTags() {
   const wrap = document.getElementById("formTags");
   wrap.innerHTML = "";
-  TOPICS.filter(t => t.label !== "All").forEach(t => {
+  CONTENT_TYPES.forEach(t => {
     const el = document.createElement("button");
     el.className = "form-tag";
-    el.textContent = t.label;
+    el.textContent = t;
     el.onclick = () => {
-      if (selectedFormTags.includes(t.label)) {
-        selectedFormTags = selectedFormTags.filter(x => x !== t.label);
+      if (selectedFormTags.includes(t)) {
+        selectedFormTags = selectedFormTags.filter(x => x !== t);
         el.classList.remove("selected");
       } else {
-        selectedFormTags.push(t.label);
+        selectedFormTags.push(t);
         el.classList.add("selected");
       }
     };
