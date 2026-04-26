@@ -1,11 +1,11 @@
 // ── CONFIG ──────────────────────────────────────────────────────────────────
 const API_KEY = "92964dfef8d957bf56e23ee2e3c3a354";
-const PROXY = "https://corsproxy.io/?";
 const GNEWS_BASE = PROXY + encodeURIComponent("https://gnews.io/api/v4/search");
 const SHEET_ID = "1G7QeP0_gE79KBAgDzcgJ79r6PWHxhy-Blywb9eLlREM";
 const SHEET_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=0`;
 const FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSfRJ8JTuz4icXf-X8M9k9qN_S5gfsx0fqvNW4zSnisCulkDig/formResponse";
 const FEDERAL_SHEET_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=207882433`;
+const PODCAST_SHEET_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=2004516310`;
 
 const TOPICS = [
   { label: "All", query: "child welfare" },
@@ -32,6 +32,17 @@ const RSS_SOURCES = [
   { id: "firstfocus", name: "First Focus on Children", desc: "Child advocacy and policy", url: "https://firstfocus.org/feed", badge: "b-rights" },
 ];
 
+const PODCAST_SOURCES = [
+  { id: "cwinfo", name: "Child Welfare Information Gateway", url: "https://feeds.soundcloud.com/users/soundcloud:users:596489397/sounds.rss" },
+  { id: "caseycast", name: "CaseyCast", url: "https://feeds.soundcloud.com/users/soundcloud:users:212314004/sounds.rss" },
+  { id: "wonkcast", name: "WonkCast", url: "https://api.substack.com/feed/podcast/3697421.rss" },
+  { id: "audionuggets", name: "Audio Nuggets: Mining For Gold", url: "https://rss.buzzsprout.com/2243612.rss" },
+  { id: "torn", name: "Torn Podcast", url: "https://anchor.fm/s/dc5f30ac/podcast/rss" },
+  { id: "upend", name: "The upEND Podcast", url: "https://anchor.fm/s/e01cfbfc/podcast/rss" },
+  { id: "imprint", name: "The Imprint Weekly", url: "https://rss.buzzsprout.com/1376827.rss" },
+  { id: "communityinsite", name: "Community In-Site", url: "https://rss.buzzsprout.com/2352800.rss" },
+];
+
 const SOURCE_FILTERS = [
   { id: "all", label: "All Sources" },
   { id: "gnews", label: "News Search" },
@@ -45,7 +56,7 @@ const SOURCE_FILTERS = [
   { id: "acf", label: "Federal" },
 ];
 
-const CONTENT_TYPES = ["Article", "Webinar", "Podcast", "Research", "Federal"];
+const CONTENT_TYPES = ["Article", "Webinar", "Podcast", "Research", "Federal", "Resource"];
 
 const FEATURED = {
   label: "Featured Story",
@@ -68,19 +79,6 @@ const EDITORS_PICK = {
   image: null,
   isEditorsPick: true,
 };
-
-const STATE_NAMES = [
-  "Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado",
-  "Connecticut", "Delaware", "Florida", "Georgia", "Hawaii", "Idaho",
-  "Illinois", "Indiana", "Iowa", "Kansas", "Kentucky", "Louisiana",
-  "Maine", "Maryland", "Massachusetts", "Michigan", "Minnesota",
-  "Mississippi", "Missouri", "Montana", "Nebraska", "Nevada",
-  "New Hampshire", "New Jersey", "New Mexico", "New York",
-  "North Carolina", "North Dakota", "Ohio", "Oklahoma", "Oregon",
-  "Pennsylvania", "Rhode Island", "South Carolina", "South Dakota",
-  "Tennessee", "Texas", "Utah", "Vermont", "Virginia", "Washington",
-  "West Virginia", "Wisconsin", "Wyoming"
-];
 
 // ── STATE ────────────────────────────────────────────────────────────────────
 let activeTag = "All";
@@ -298,17 +296,54 @@ async function fetchFederalSheet() {
   } catch(e) { return []; }
 }
 
-function parseCSVRow(row) {
-  const result = [];
-  let current = "";
-  let inQuotes = false;
-  for (let i = 0; i < row.length; i++) {
-    if (row[i] === '"') { inQuotes = !inQuotes; }
-    else if (row[i] === "," && !inQuotes) { result.push(current); current = ""; }
-    else { current += row[i]; }
-  }
-  result.push(current);
-  return result;
+async function fetchPodcastSheet() {
+  try {
+    const res = await fetch(PROXY + encodeURIComponent(PODCAST_SHEET_URL + "&t=" + Date.now()));
+    const text = await res.text();
+    const rows = text.trim().split("\n").slice(1);
+    return rows.filter(r => r.trim()).map(row => {
+      const cols = parseCSVRow(row);
+      const [title, url, source, date, desc, image] = cols;
+      return {
+        title: title?.trim() || "Untitled",
+        url: url?.trim() || "#",
+        source: source?.trim() || "Podcast",
+        date: (() => { try { const d = new Date(date?.trim()); return isNaN(d) ? "" : d.toISOString().slice(0, 10); } catch(e) { return ""; } })(),
+        desc: desc?.trim() || "",
+        image: image?.trim() || null,
+      };
+    }).filter(a => a.title && a.url && a.url !== "#");
+  } catch(e) { return []; }
+}
+
+async function fetchPodcastFeeds() {
+  const results = await Promise.allSettled(PODCAST_SOURCES.map(fetchPodcastFeed));
+  const episodes = [];
+  results.forEach(r => { if (r.status === "fulfilled") episodes.push(...r.value); });
+  return episodes;
+}
+
+async function fetchPodcastFeed(source) {
+  try {
+    const res = await fetch(PROXY + encodeURIComponent(source.url));
+    const text = await res.text();
+    const xml = new DOMParser().parseFromString(text, "text/html");
+    return Array.from(xml.querySelectorAll("item")).slice(0, 3).map(item => {
+      const rawTitle = item.querySelector("title")?.textContent?.trim() || "Untitled";
+      const title = rawTitle.replace(/<!\[CDATA\[|\]\]>/g, "").trim();
+      const linkEl = item.querySelector("link");
+      const link = linkEl?.textContent?.trim() || linkEl?.getAttribute("href") || item.querySelector("guid")?.textContent?.trim() || "#";
+      const rawDesc = item.querySelector("description")?.textContent || "";
+      const desc = stripHTML(rawDesc).replace(/<!\[CDATA\[|\]\]>/g, "").trim().slice(0, 200);
+      const pubDate = item.querySelector("pubDate")?.textContent?.trim() || "";
+      const date = pubDate ? new Date(pubDate).toISOString().slice(0, 10) : "";
+      const image = item.querySelector("itunes\\:image")?.getAttribute("href") ||
+                    item.querySelector("image")?.getAttribute("href") ||
+                    item.querySelector("enclosure[type='image/jpeg']")?.getAttribute("url") ||
+                    null;
+      return { title, source: source.name, date, desc, url: link, image };
+    });
+  } catch(e) { return []; }
 }
 
 // ── RENDER ARTICLES ──────────────────────────────────────────────────────────
@@ -499,15 +534,6 @@ function scrollToArticles() {
 }
 
 // ── UTILITIES ─────────────────────────────────────────────────────────────────
-function detectState(text) {
-  if (!text) return "";
-  const t = text.toLowerCase();
-  for (const state of STATE_NAMES) {
-    if (t.includes(state.toLowerCase())) return state;
-  }
-  return "";
-}
-
 function inferTopic(t) {
   t = t.toLowerCase();
   if (t.includes("foster")) return "Foster care";
@@ -523,21 +549,6 @@ function inferTopic(t) {
   if (t.includes("preserv") || t.includes("reunif")) return "Family preservation";
   if (t.includes("federal") || t.includes("acf") || t.includes("children's bureau")) return "Federal";
   return "General";
-}
-
-function stripHTML(html) {
-  const d = document.createElement("div");
-  d.innerHTML = html;
-  return (d.textContent || d.innerText || "").replace(/\s+/g, " ").trim();
-}
-
-function fmtDate(d) {
-  if (!d) return "";
-  return new Date(d + "T00:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
-}
-
-function esc(s) {
-  return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
 }
 
 function updateFooter() {

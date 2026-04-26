@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Podcasts — Child Welfare News</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+
+<div class="announce-bar">
+  Stay current on child welfare news — bookmark this site
+</div>
+
+<header class="masthead">
+  <div class="masthead-inner">
+    <a href="index.html" style="text-decoration:none;">
+      <div class="masthead-logo">child welfare news <span>+ more</span></div>
+    </a>
+    <nav class="masthead-nav">
+      <a class="nav-link" href="index.html#today">Today</a>
+      <a class="nav-link" href="index.html#webinars">Webinars</a>
+      <a class="nav-link" href="podcasts.html" style="color:var(--teal);font-weight:600;">Podcasts</a>
+      <a class="nav-link" href="index.html#research">Research</a>
+      <a class="nav-link" href="index.html#articles">All Articles</a>
+      <a class="nav-link" href="index.html">← Back to main site</a>
+    </nav>
+  </div>
+</header>
+
+<div class="page">
+
+  <div class="podcast-hero">
+    <h1 class="podcast-hero-title">Podcasts</h1>
+    <p class="podcast-hero-sub">Latest episodes from across the child welfare podcast ecosystem — curated and auto-updated.</p>
+  </div>
+
+  <div class="show-filters" id="showFilters"></div>
+
+  <div class="podcast-status">
+    <span class="podcast-count" id="podcastCount"></span>
+    <span class="api-pill loading" id="podcastPill">Loading...</span>
+  </div>
+
+  <div class="podcast-grid" id="podcastGrid"></div>
+  <div class="pagination" id="podcastPagination"></div>
+
+</div>
+
+<footer class="site-footer">
+  <span>Child Welfare News — Podcasts</span>
+  <div class="footer-links">
+    <a href="index.html">Main Site</a>
+  </div>
+  <span id="footerUpdate"></span>
+</footer>
+<script src="js/utils.js"></script>
+<script src="js/podcasts.js"></script>
+</body>
+</html>
