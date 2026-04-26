@@ -48,11 +48,16 @@ async function fetchPodcastFeed(source) {
     const res = await fetch(PROXY + encodeURIComponent(source.url));
     const text = await res.text();
     const xml = new DOMParser().parseFromString(text, "text/html");
+    const testItem = new DOMParser().parseFromString(text, "text/html").querySelector("item");
     return Array.from(xml.querySelectorAll("item")).slice(0, 5).map(item => {
       const rawTitle = item.querySelector("title")?.textContent?.trim() || "Untitled";
       const title = rawTitle.replace(/<!\[CDATA\[|\]\]>/g, "").trim();
-      const linkEl = item.querySelector("link");
-      const link = linkEl?.textContent?.trim() || linkEl?.getAttribute("href") || item.querySelector("guid")?.textContent?.trim() || "#";
+      const guid = item.querySelector("guid")?.textContent?.trim() || "";
+      const enclosureUrl = item.querySelector("enclosure")?.getAttribute("url") || "";
+      const linkNext = item.querySelector("link")?.nextSibling?.textContent?.trim() || "";
+      let link = (linkNext.startsWith("http") ? linkNext : null) ||
+           (enclosureUrl.startsWith("http") && !enclosureUrl.includes(".mp3") && !enclosureUrl.includes(".m4a") ? enclosureUrl : null) ||
+           "#";
       const rawDesc = item.querySelector("description")?.textContent || "";
       const desc = stripHTML(rawDesc).replace(/<!\[CDATA\[|\]\]>/g, "").trim().slice(0, 200);
       const pubDate = item.querySelector("pubDate")?.textContent?.trim() || "";
@@ -61,7 +66,7 @@ async function fetchPodcastFeed(source) {
                     item.querySelector("[rel='image']")?.getAttribute("href") ||
                     null;
       return { title, source: source.name, sourceId: source.id, date, desc, url: link, image };
-    });
+    }).filter(e => e.url && e.url !== "#");
   } catch(e) { return []; }
 }
 
@@ -133,7 +138,7 @@ function podcastCardHTML(e) {
     ? `<img class="podcast-card-image" src="${esc(e.image)}" alt="" loading="lazy" onerror="this.style.display='none'" />`
     : `<div class="podcast-card-image-placeholder">${esc(e.source.charAt(0))}</div>`;
 
-  return `<div class="podcast-card" onclick="window.open('${esc(e.url)}','_blank')">
+  return `<div class="podcast-card" onclick="if(event.target.tagName!=='A') window.open('${esc(e.url)}','_blank')">
     ${img}
     <div class="podcast-card-body">
       <div class="podcast-card-show">${esc(e.source)}</div>
