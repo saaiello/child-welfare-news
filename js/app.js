@@ -7,6 +7,7 @@ const FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSfRJ8JTuz4icXf-X8M9k9
 const FEDERAL_SHEET_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=207882433`;
 const PODCAST_SHEET_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=2004516310`;
 const WEBINAR_SHEET_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=519660052`;
+const RESEARCH_SHEET_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=2073939782`;
 
 const TOPICS = [
   { label: "All", query: "child welfare" },
@@ -98,6 +99,7 @@ buildSourceFilters();
 buildFormTags();
 loadPodcastPreview()
 loadWebinarPreview();
+loadResearchPreview();
 runSearch();
 
 // ── HERO ─────────────────────────────────────────────────────────────────────
@@ -464,15 +466,10 @@ function renderDigestSections() {
 
   const todayItems = allArticles.filter(a => a.date === today).slice(0, 2);
   const monthItems = allArticles.filter(a => a.date && a.date.startsWith(thisMonth) && a.date !== today).slice(0, 3);
-  const researchItems = allArticles.filter(a =>
-    ["Research", "Policy & legislation"].includes(a.topic) &&
-    ["casey", "cwmonitor", "nccpr", "childrensrights", "curated", "chapinhall", "childtrends", "urban", "firstfocus"].includes(a.sourceId)
-  ).slice(0, 5);
   const fedsItems = allArticles.filter(a => a.sourceId === "acf").slice(0, 5);
 
   renderDigestList("todayList", todayItems, "today");
   renderDigestList("monthList", monthItems, "month");
-  renderDigestList("researchList", researchItems, "research");
   renderDigestList("fedsList", fedsItems, "feds");
 }
 
@@ -577,6 +574,90 @@ async function loadWebinarPreview() {
 
   } catch(e) {
     featured.innerHTML = '<p class="media-placeholder">Could not load webinars.</p>';
+  }
+}
+
+async function loadResearchPreview() {
+  const list = document.getElementById("researchList");
+  const featured = document.getElementById("researchFeatured");
+  if (!list || !featured) return;
+
+  try {
+    const RESEARCH_SHEET_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=2073939782`;
+    const res = await fetch(PROXY + encodeURIComponent(RESEARCH_SHEET_URL + "&t=" + Date.now()));
+    const text = await res.text();
+    const rows = text.trim().split("\n").slice(1);
+    const items = rows.filter(r => r.trim()).map(row => {
+      const cols = parseCSVRow(row);
+      const [title, url, source, date, desc, contentType, topicTags, image] = cols;
+      return {
+        title: title?.trim() || "Untitled",
+        url: url?.trim() || "#",
+        source: source?.trim() || "Unknown",
+        date: (() => { try { const d = new Date(date?.trim()); return isNaN(d) ? "" : d.toISOString().slice(0, 10); } catch(e) { return ""; } })(),
+        desc: desc?.trim() || "",
+        contentType: contentType?.trim() || "Research",
+        topicTags: topicTags?.trim() || "",
+        image: image?.trim() || null,
+      };
+    }).filter(a => a.title && a.url && a.url !== "#");
+
+    items.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+    const featuredItem = items[0];
+    const listItems = items.slice(1, 6);
+
+    // Render featured on the right
+    if (featuredItem) {
+      const typeColors = {
+        research: { bg: "#EEF4FA", color: "#1D4E7A", border: "#B5CDE0" },
+        policy: { bg: "#F0EDF8", color: "#4A3A8A", border: "#CECBF6" },
+        practice: { bg: "#EAF3DE", color: "#3B6D11", border: "#9FE1CB" },
+        data: { bg: "#FEF3E2", color: "#92400E", border: "#FCD34D" },
+        legislation: { bg: "#FDF2F8", color: "#9D174D", border: "#F9A8D4" },
+        toolkit: { bg: "#E8F5F1", color: "#0D5C4A", border: "#6BBFA8" },
+      };
+      const colors = typeColors[featuredItem.contentType.toLowerCase()] || typeColors.research;
+      const img = featuredItem.image
+        ? `<img src="${esc(featuredItem.image)}" alt="" style="width:100%;border-radius:10px;margin-bottom:1rem;object-fit:cover;aspect-ratio:16/9;" loading="lazy" />`
+        : "";
+
+      featured.innerHTML = `
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.5rem;cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,0.06);height:100%;" onclick="window.open('${esc(featuredItem.url)}','_blank')">
+          ${img}
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap;">
+            <span style="font-size:12px;font-weight:550;padding:2px 8px;border-radius:3px;background:${colors.bg};color:${colors.color};border:1px solid ${colors.border};text-transform:uppercase;">${esc(featuredItem.contentType)}</span>
+            <span style="font-size:11px;color:var(--text-tertiary);">${esc(featuredItem.source)}</span>
+            <span style="font-size:11px;color:var(--text-tertiary);margin-left:auto;">${fmtDate(featuredItem.date)}</span>
+          </div>
+          <p style="font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:var(--text-primary);line-height:1.3;margin-bottom:8px;">${esc(featuredItem.title)}</p>
+          ${featuredItem.desc ? `<p style="font-size:13px;color:var(--text-secondary);line-height:1.6;margin-bottom:12px;">${esc(featuredItem.desc.slice(0, 250))}${featuredItem.desc.length > 250 ? '...' : ''}</p>` : ''}
+          <a href="${esc(featuredItem.url)}" target="_blank" rel="noopener" onclick="event.stopPropagation()" style="font-size:12px;font-weight:600;color:var(--teal);border-bottom:1.5px solid var(--teal);padding-bottom:2px;">Read resource →</a>
+        </div>
+      `;
+    }
+
+    // Render list on the left
+    if (!listItems.length) {
+      list.innerHTML = `<p style="font-size:13px;color:var(--text-tertiary);font-style:italic;">More resources coming soon.</p>`;
+      return;
+    }
+
+    list.innerHTML = listItems.map(a => `
+      <div class="digest-item" onclick="window.open('${esc(a.url)}','_blank')">
+        <span class="digest-arrow">→</span>
+        <div class="digest-item-body">
+          <p class="digest-item-title">${esc(a.title)}</p>
+          <span class="digest-item-meta">${esc(a.source)} · ${fmtDate(a.date)}</span>
+          ${a.desc ? `<p style="font-size:12px;color:var(--text-secondary);line-height:1.5;margin-top:4px;">${esc(a.desc.slice(0, 150))}${a.desc.length > 150 ? '...' : ''}</p>` : ''}
+        </div>
+      </div>
+    `).join("");
+
+    list.innerHTML += `<div class="digest-see-all-wrap"><a class="digest-see-all" href="research.html">See all research, policy & practice →</a></div>`;
+
+  } catch(e) {
+    list.innerHTML = `<p style="font-size:13px;color:var(--text-tertiary);font-style:italic;">Could not load resources.</p>`;
   }
 }
 

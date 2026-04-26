@@ -107,6 +107,7 @@
     /* RESEARCH & FROM THE FEDS */
     .research-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; }
     .feds-label { display: inline-flex; align-items: center; gap: 6px; }
+    .research-preview-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; margin-top: 1.25rem; }
 
     /* SEARCH */
     .search-section { background: var(--teal); border-radius: 16px; padding: 2rem; margin: 2.5rem 0; }
@@ -274,7 +275,7 @@
     .podcast-preview-placeholder { width: 100%; aspect-ratio: 1; background: var(--teal); display: flex; align-items: center; justify-content: center; font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 700; color: var(--yellow); }
     .podcast-preview-body { padding: 6px 8px 8px; }
     .podcast-preview-show { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--teal); margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .podcast-preview-title { font-size: 12px; font-weight: 500; color: var(--text-primary); line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .podcast-preview-title { font-size: 12px; font-weight: 500; color: var(--text-primary); line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 4; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 
     /* WEBINARS PAGE */
     .webinar-hero { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: center; background: var(--surface); border-radius: 16px; overflow: hidden; margin: 2rem 0; box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 8px rgba(0,0,0,0.04); }
