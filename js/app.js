@@ -466,7 +466,7 @@ function renderDigestSections() {
     ["Research", "Policy & legislation"].includes(a.topic) &&
     ["casey", "cwmonitor", "nccpr", "childrensrights", "curated", "chapinhall", "childtrends", "urban", "firstfocus"].includes(a.sourceId)
   ).slice(0, 5);
-  const fedsItems = allArticles.filter(a => a.sourceId === "acf").slice(0, 6);
+  const fedsItems = allArticles.filter(a => a.sourceId === "acf").slice(0, 5);
 
   renderDigestList("todayList", todayItems, "today");
   renderDigestList("monthList", monthItems, "month");
