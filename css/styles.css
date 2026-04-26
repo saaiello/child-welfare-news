@@ -101,6 +101,9 @@
     .media-placeholder { font-size: 12px; color: var(--text-tertiary); font-style: italic; padding: 1rem 0; }
     .media-see-all { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; color: var(--teal); font-weight: 500; margin-top: 1rem; }
     .media-filter-row { display: flex; gap: 6px; margin-bottom: 1rem; }
+    .webinar-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; margin-top: 1.25rem; }
+  ` .webinar-featured { }
+    .webinar-list { display: flex; flex-direction: column; }
 
     /* RESEARCH & FROM THE FEDS */
     .research-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; }
@@ -265,7 +268,7 @@
     @media (max-width: 500px) { .podcast-grid { grid-template-columns: repeat(2, 1fr); } }
 
     /* PODCASTS INDEX */
-    .podcast-preview-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; margin-bottom: 1rem; }
+    .podcast-preview-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 0.75rem; margin-bottom: 1rem; }
     .podcast-preview-card { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; cursor: pointer; transition: all 0.15s; }
     .podcast-preview-card:hover { border-color: var(--teal); transform: translateY(-1px); }
     .podcast-preview-img { width: 100%; aspect-ratio: 1; object-fit: cover; display: block; }

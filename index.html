@@ -66,34 +66,6 @@
     </div>
   </section>
 
-  <!-- WEBINARS + PODCASTS -->
-  <section class="site-section" id="webinars">
-    <div class="media-grid">
-      <div class="media-col">
-        <div class="media-col-title">webinars</div>
-        <div class="media-filter-row">
-          <button class="tag active" id="webinarTagUpcoming" onclick="switchWebinarTab('upcoming')">Upcoming</button>
-          <button class="tag" id="webinarTagRecorded" onclick="switchWebinarTab('recorded')">Recorded</button>
-        </div>
-        <div class="media-list" id="webinarUpcoming">
-          <p class="media-placeholder">Webinar sources coming soon. <a href="#missing">Submit one →</a></p>
-        </div>
-        <div class="media-list" id="webinarArchive" style="display:none;">
-          <p class="media-placeholder">Recorded webinars will appear here.</p>
-        </div>
-        <a class="media-see-all" href="#missing">Submit a webinar →</a>
-      </div>
-
-      <div class="media-col" id="podcasts">
-        <div class="media-col-title">podcasts</div>
-        <div class="podcast-preview-grid" id="podcastPreviewGrid">
-          <div class="state-box"><div class="spinner"></div></div>
-        </div>
-        <a class="media-see-all" href="podcasts.html">See all podcasts →</a>
-      </div>
-    </div>
-  </section>
-
   <!-- RESEARCH & POLICY + FROM THE FEDS -->
   <section class="site-section" id="research">
     <div class="research-grid">
@@ -109,6 +81,30 @@
           <div class="state-box"><div class="spinner"></div></div>
         </div>
       </div>
+    </div>
+  </section>
+
+  <!-- WEBINARS -->
+  <section class="site-section" id="webinars">
+    <div class="digest-col-title"><span class="hl">webinars</span></div>
+    <div class="webinar-layout">
+      <div class="webinar-featured" id="webinarFeatured">
+        <div class="state-box"><div class="spinner"></div></div>
+      </div>
+      <div class="webinar-list" id="webinarList"></div>
+    </div>
+    <div style="margin-top:1rem;display:flex;gap:1.5rem;">
+    </div>
+  </section>
+
+  <!-- PODCASTS -->
+  <section class="site-section" id="podcasts">
+    <div class="digest-col-title"><span class="hl">podcasts</span></div>
+    <div class="podcast-preview-grid" id="podcastPreviewGrid">
+      <div class="state-box"><div class="spinner"></div></div>
+    </div>
+    <div style="margin-top:1rem;">
+      <a class="digest-see-all" href="podcasts.html">See all podcasts →</a>
     </div>
   </section>
 

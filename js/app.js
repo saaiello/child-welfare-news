@@ -6,6 +6,7 @@ const SHEET_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?for
 const FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSfRJ8JTuz4icXf-X8M9k9qN_S5gfsx0fqvNW4zSnisCulkDig/formResponse";
 const FEDERAL_SHEET_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=207882433`;
 const PODCAST_SHEET_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=2004516310`;
+const WEBINAR_SHEET_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=519660052`;
 
 const TOPICS = [
   { label: "All", query: "child welfare" },
@@ -94,6 +95,7 @@ renderHero();
 buildSourceFilters();
 buildFormTags();
 loadPodcastPreview()
+loadWebinarPreview();
 runSearch();
 
 // ── HERO ─────────────────────────────────────────────────────────────────────
@@ -347,6 +349,27 @@ async function fetchPodcastFeed(source) {
   } catch(e) { return []; }
 }
 
+async function fetchWebinarSheet() {
+  try {
+    const res = await fetch(PROXY + encodeURIComponent(WEBINAR_SHEET_URL + "&t=" + Date.now()));
+    const text = await res.text();
+    const rows = text.trim().split("\n").slice(1);
+    return rows.filter(r => r.trim()).map(row => {
+      const cols = parseCSVRow(row);
+      const [title, url, source, date, desc, type, image] = cols;
+      return {
+        title: title?.trim() || "Untitled",
+        url: url?.trim() || "#",
+        source: source?.trim() || "Webinar",
+        date: (() => { try { const d = new Date(date?.trim()); return isNaN(d) ? "" : d.toISOString().slice(0, 10); } catch(e) { return ""; } })(),
+        desc: desc?.trim().slice(0, 300) || "",
+        type: type?.trim() || "Upcoming",
+        image: image?.trim() || null,
+      };
+    }).filter(a => a.title && a.url && a.url !== "#");
+  } catch(e) { return []; }
+}
+
 // ── RENDER ARTICLES ──────────────────────────────────────────────────────────
 function renderArticles() {
   const grid = document.getElementById("articleGrid");
@@ -485,6 +508,76 @@ async function loadPodcastPreview() {
   }
 }
 
+// ── WEBINAR PREVIEW ──────────────────────────────────────────────────────────
+async function loadWebinarPreview() {
+  const featured = document.getElementById("webinarFeatured");
+  const list = document.getElementById("webinarList");
+  if (!featured || !list) return;
+
+  try {
+    const webinars = await fetchWebinarSheet();
+    const today = new Date().toISOString().slice(0, 10);
+
+    const upcoming = webinars
+      .filter(w => w.type === "Upcoming" && w.date >= today)
+      .sort((a, b) => new Date(a.date) - new Date(b.date));
+
+    const recorded = webinars
+      .filter(w => w.type === "Recorded" || w.date < today)
+      .sort((a, b) => new Date(b.date) - new Date(a.date));
+
+    const featuredWebinar = upcoming[0] || recorded[0];
+    const listItems = [...upcoming.slice(1), ...recorded].slice(0, 4);
+
+    if (!featuredWebinar) {
+      featured.innerHTML = '<p class="media-placeholder">No webinars yet. <a href="#missing">Submit one →</a></p>';
+      list.innerHTML = "";
+      return;
+    }
+
+    const img = featuredWebinar.image
+      ? `<img src="${esc(featuredWebinar.image)}" alt="" style="width:100%;border-radius:10px;margin-bottom:1rem;object-fit:cover;aspect-ratio:16/9;" loading="lazy" />`
+      : "";
+
+    featured.innerHTML = `
+      <div style="cursor:pointer;" onclick="window.open('${esc(featuredWebinar.url)}','_blank')">
+        ${img}
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+          <span class="featured-label" style="font-size:10px;">${esc(featuredWebinar.type)}</span>
+          <span style="font-size:11px;color:var(--text-tertiary);">${esc(featuredWebinar.source)}</span>
+          <span style="font-size:11px;color:var(--text-tertiary);margin-left:auto;">${fmtDate(featuredWebinar.date)}</span>
+        </div>
+        <p style="font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:var(--text-primary);line-height:1.3;margin-bottom:8px;">${esc(featuredWebinar.title)}</p>
+        ${featuredWebinar.desc ? `<p style="font-size:13px;color:var(--text-secondary);line-height:1.6;margin-bottom:12px;">${esc(featuredWebinar.desc)}</p>` : ""}
+        <a href="${esc(featuredWebinar.url)}" target="_blank" rel="noopener" onclick="event.stopPropagation()" style="font-size:12px;font-weight:600;color:var(--teal);border-bottom:1.5px solid var(--teal);padding-bottom:2px;">Register →</a>
+      </div>
+    `;
+
+    if (!listItems.length) {
+      list.innerHTML = '<p class="media-placeholder" style="font-style:italic;">More webinars coming soon.</p>';
+      return;
+    }
+
+    list.innerHTML = listItems.map(w => `
+      <div class="digest-item" onclick="window.open('${esc(w.url)}','_blank')">
+        <span class="digest-arrow">→</span>
+        <div class="digest-item-body">
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px;">
+            <span style="font-size:10px;font-weight:700;padding:1px 6px;border-radius:3px;background:${w.type === 'Upcoming' ? 'var(--teal)' : 'var(--bg)'};color:${w.type === 'Upcoming' ? 'var(--yellow)' : 'var(--text-tertiary)'};border:1px solid ${w.type === 'Upcoming' ? 'var(--teal)' : 'var(--border)'};">${esc(w.type)}</span>
+            <span class="digest-item-meta">${esc(w.source)} · ${fmtDate(w.date)}</span>
+          </div>
+          <p class="digest-item-title">${esc(w.title)}</p>
+          ${w.type?.toLowerCase() === 'recorded' && w.desc ? `<p style="font-size:12px;color:var(--text-secondary);line-height:1.5;margin-top:4px;">${esc(w.desc.slice(0, 200))}${w.desc.length > 200 ? '...' : ''}</p>` : ''}
+        </div>
+      </div>
+    `).join("");
+    list.innerHTML += `<div class="digest-see-all-wrap" style="margin-top:0.75rem;display:flex;gap:1.5rem;"><a class="digest-see-all" href="webinars.html">See all webinars →</a><a class="digest-see-all" href="#missing">Submit a webinar →</a></div>`;
+
+  } catch(e) {
+    featured.innerHTML = '<p class="media-placeholder">Could not load webinars.</p>';
+  }
+}
+
 async function fetchPodcastPreview(source) {
   try {
     const res = await fetch(PROXY + encodeURIComponent(source.url));
@@ -519,7 +612,7 @@ async function loadPodcastPreview() {
     let episodes = [];
     results.forEach(r => { if (r.status === "fulfilled") episodes.push(...r.value); });
     episodes.sort((a, b) => new Date(b.date) - new Date(a.date));
-    episodes = episodes.slice(0, 6);
+    episodes = episodes.slice(0, 5);
 
     if (!episodes.length) {
       grid.innerHTML = '<p class="media-placeholder">No episodes available.</p>';
