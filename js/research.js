@@ -151,19 +151,25 @@ function resourceCardHTML(r) {
 
   const typeKey = r.contentType.toLowerCase();
   const colors = typeColors[typeKey] || typeColors.research;
-
   const topics = r.topicTags ? r.topicTags.split(",").map(t => t.trim()).filter(Boolean).slice(0, 3) : [];
 
-  return `<div class="webinar-card" onclick="window.open('${esc(r.url)}','_blank')">
-    <div class="webinar-card-meta">
-      <span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:3px;background:${colors.bg};color:${colors.color};border:1px solid ${colors.border};text-transform:uppercase;letter-spacing:0.04em;">${esc(r.contentType)}</span>
-      ${topics.map(t => `<span class="webinar-tag">${esc(t)}</span>`).join("")}
-      <span class="webinar-card-source">${esc(r.source)}</span>
-      <span class="webinar-card-date">${fmtDate(r.date)}</span>
+  const img = r.image
+    ? `<img class="article-thumb" src="${esc(r.image)}" alt="" loading="lazy" onerror="this.style.display='none'" />`
+    : `<div class="article-thumb-placeholder" style="background:${colors.bg};color:${colors.color};">${esc(r.contentType.charAt(0))}</div>`;
+
+  return `<div class="webinar-card" style="display:flex;gap:1rem;align-items:flex-start;" onclick="window.open('${esc(r.url)}','_blank')">
+    <div style="flex:1;min-width:0;">
+      <div class="webinar-card-meta">
+        <span style="font-size:11px;font-weight:500;padding:2px 8px;border-radius:3px;background:${colors.bg};color:${colors.color};border:1px solid ${colors.border};text-transform:uppercase;letter-spacing:0.04em;">${esc(r.contentType)}</span>
+        ${topics.map(t => `<span class="webinar-tag">${esc(t)}</span>`).join("")}
+        <span class="webinar-card-source">${esc(r.source)}</span>
+        <span class="webinar-card-date">${fmtDate(r.date)}</span>
+      </div>
+      <p class="webinar-card-title">${esc(r.title)}</p>
+      ${r.desc ? `<p class="webinar-card-desc">${esc(r.desc)}</p>` : ''}
+      <a class="webinar-card-link" href="${esc(r.url)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">Read resource →</a>
     </div>
-    <p class="webinar-card-title">${esc(r.title)}</p>
-    ${r.desc ? `<p class="webinar-card-desc">${esc(r.desc)}</p>` : ''}
-    <a class="webinar-card-link" href="${esc(r.url)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">Read resource →</a>
+    ${img}
   </div>`;
 }
 
