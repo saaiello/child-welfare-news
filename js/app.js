@@ -62,16 +62,18 @@ const SOURCE_FILTERS = [
 
 const CONTENT_TYPES = ["Article", "Webinar", "Podcast", "Research", "Federal", "Resource", "Policy", "Data", "Toolkit"];
 
-const FEATURED = {
-  label: "Featured Story",
-  title: "August: When Child Welfare Chooses",
-  source: "Child Welfare News",
-  url: "https://childwelfarenews.substack.com/p/august-when-child-welfare-chooses",
-  note: "Every August, the child welfare system reveals its priorities. This piece examines what those choices say about who we protect — and who we don't.",
-  date: "2024-08-01",
-  image: null,
-  isEditorsPick: false,
-};
+const FEATURED = [
+  {
+    label: "Featured Story",
+    title: "August: When Child Welfare Chooses",
+    source: "Child Welfare News",
+    url: "https://childwelfarenews.substack.com/p/august-when-child-welfare-chooses",
+    note: "Every August, the child welfare system reveals its priorities. This piece examines what those choices say about who we protect — and who we don't.",
+    date: "2024-08-01",
+    image: null,
+    isEditorsPick: false,
+  }
+];
 
 const EDITORS_PICK = {
   label: "Editor's Pick",
@@ -92,6 +94,9 @@ let rssLoaded = false;
 let currentPage = 1;
 const PAGE_SIZE = 10;
 let selectedFormTags = [];
+let carouselSlides = [];
+let currentSlide = 0;
+let carouselInterval = null;
 
 // ── INIT ─────────────────────────────────────────────────────────────────────
 renderHero();
@@ -103,22 +108,117 @@ loadResearchPreview();
 runSearch();
 
 // ── HERO ─────────────────────────────────────────────────────────────────────
-function renderHero() {
-  const f = FEATURED;
-  document.getElementById("heroLabel").textContent = f.label;
-  document.getElementById("heroLabel").className = f.isEditorsPick ? "hero-label-pick" : "hero-label";
-  document.getElementById("heroSource").textContent = f.source;
-  document.getElementById("heroDate").textContent = fmtDate(f.date);
-  document.getElementById("heroTitle").textContent = f.title;
-  document.getElementById("heroNote").textContent = f.note;
-  document.getElementById("heroLink").href = f.url;
+async function buildCarousel() {
+  // Start with manual slides
+  carouselSlides = [...FEATURED];
 
+  // Fetch from all sheets
+  try {
+    const [liveRes, federalRes, researchRes, webinarRes, podcastRes] = await Promise.allSettled([
+      fetchCarouselSheet(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=0`, "live"),
+      fetchCarouselSheet(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=207882433`, "federal"),
+      fetchCarouselSheet(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=2073939782`, "research"),
+      fetchCarouselSheet(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=519660052`, "webinar"),
+      fetchCarouselSheet(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=2004516310`, "podcast"),
+    ]);
+
+    let autoSlides = [];
+    [liveRes, federalRes, researchRes, webinarRes, podcastRes].forEach(r => {
+      if (r.status === "fulfilled") autoSlides.push(...r.value);
+    });
+
+    // Sort by date, take 3 most recent
+    autoSlides.sort((a, b) => new Date(b.date) - new Date(a.date));
+    carouselSlides.push(...autoSlides.slice(0, 3));
+  } catch(e) {}
+
+  renderCarousel();
+  startCarousel();
+}
+
+async function fetchCarouselSheet(url, type) {
+  try {
+    const res = await fetch(PROXY + encodeURIComponent(url + "&t=" + Date.now()));
+    const text = await res.text();
+    const rows = text.trim().split("\n").slice(1);
+    return rows.filter(r => r.trim()).map(row => {
+      const cols = parseCSVRow(row);
+      const title = cols[0]?.trim() || "";
+      const url = cols[1]?.trim() || "#";
+      const source = cols[2]?.trim() || "";
+      const date = (() => { try { const d = new Date(cols[3]?.trim()); return isNaN(d) ? "" : d.toISOString().slice(0, 10); } catch(e) { return ""; } })();
+      const note = cols[4]?.trim() || "";
+      const imageIndex = { live: null, federal: null, research: 7, webinar: 6, podcast: 5 };
+      const imgCol = imageIndex[type];
+      const image = imgCol !== null ? cols[imgCol]?.trim() || null : null;
+      const typeLabels = { live: "Curated", federal: "Federal", research: "Research", webinar: "Webinar", podcast: "Podcast" };
+      return { label: typeLabels[type], title, source, url, note, date, image: image || null, isEditorsPick: false };
+    }).filter(a => a.title && a.url && a.url !== "#");
+  } catch(e) { return []; }
+}
+
+function renderCarousel() {
   const wrap = document.getElementById("heroImageWrap");
-  if (f.image) {
-    wrap.innerHTML = `<img class="hero-image" src="${esc(f.image)}" alt="" loading="lazy" onerror="this.parentElement.innerHTML=''" />`;
+  const body = document.getElementById("heroBody");
+  if (!carouselSlides.length) return;
+
+  const slide = carouselSlides[currentSlide];
+
+  // Update content
+  document.getElementById("heroLabel").textContent = slide.label || "Featured";
+  document.getElementById("heroLabel").className = slide.isEditorsPick ? "hero-label-pick" : "hero-label";
+  document.getElementById("heroSource").textContent = slide.source || "";
+  document.getElementById("heroDate").textContent = fmtDate(slide.date);
+  document.getElementById("heroTitle").textContent = slide.title;
+  document.getElementById("heroNote").textContent = slide.note || "";
+  document.getElementById("heroLink").href = slide.url;
+
+  // Image
+  if (slide.image) {
+    wrap.innerHTML = `<img class="hero-image" src="${esc(slide.image)}" alt="" loading="lazy" onerror="this.innerHTML='<div class=hero-image-placeholder>CWN</div>'" />`;
   } else {
     wrap.innerHTML = `<div class="hero-image-placeholder">CWN</div>`;
   }
+
+  // Dots
+  renderCarouselDots();
+}
+
+function renderCarouselDots() {
+  let dotsEl = document.getElementById("carouselDots");
+  if (!dotsEl) return;
+  dotsEl.innerHTML = carouselSlides.map((_, i) => `
+    <button onclick="goToSlide(${i})" style="width:8px;height:8px;border-radius:50%;border:none;cursor:pointer;transition:all 0.15s;background:${i === currentSlide ? 'var(--teal)' : 'var(--border)' };padding:0;"></button>
+  `).join("");
+}
+
+function goToSlide(index) {
+  currentSlide = index;
+  renderCarousel();
+  resetCarousel();
+}
+
+function nextSlide() {
+  currentSlide = (currentSlide + 1) % carouselSlides.length;
+  renderCarousel();
+}
+
+function prevSlide() {
+  currentSlide = (currentSlide - 1 + carouselSlides.length) % carouselSlides.length;
+  renderCarousel();
+}
+
+function startCarousel() {
+  carouselInterval = setInterval(nextSlide, 5000);
+}
+
+function resetCarousel() {
+  clearInterval(carouselInterval);
+  startCarousel();
+}
+
+function renderHero() {
+  buildCarousel();
 }
 
 // ── TAGS ─────────────────────────────────────────────────────────────────────

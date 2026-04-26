@@ -34,16 +34,21 @@
 <div class="page">
 
   <!-- HERO -->
-  <section class="hero" id="featuredHero">
-    <div class="hero-body">
+  <section class="hero" id="featuredHero" onmouseenter="clearInterval(carouselInterval)" onmouseleave="startCarousel()">
+    <div class="hero-body" id="heroBody">
       <div class="hero-eyebrow">
         <span class="hero-label" id="heroLabel">Featured Story</span>
         <span class="hero-source" id="heroSource"></span>
         <span class="hero-date" id="heroDate"></span>
       </div>
-      <p class="hero-title" id="heroTitle">Loading featured story...</p>
+      <p class="hero-title" id="heroTitle">Loading...</p>
       <p class="hero-note" id="heroNote"></p>
       <a class="hero-link" id="heroLink" href="#" target="_blank" rel="noopener">Read More →</a>
+      <div style="display:flex;align-items:center;gap:12px;margin-top:1.5rem;">
+        <button onclick="prevSlide()" style="background:none;border:1.5px solid var(--teal);border-radius:50%;width:32px;height:32px;cursor:pointer;color:var(--teal);font-size:14px;display:flex;align-items:center;justify-content:center;">←</button>
+        <div id="carouselDots" style="display:flex;gap:6px;align-items:center;"></div>
+        <button onclick="nextSlide()" style="background:none;border:1.5px solid var(--teal);border-radius:50%;width:32px;height:32px;cursor:pointer;color:var(--teal);font-size:14px;display:flex;align-items:center;justify-content:center;">→</button>
+      </div>
     </div>
     <div id="heroImageWrap"></div>
   </section>
