@@ -19,9 +19,11 @@ const TOPICS = [
   { label: "Child abuse & neglect", query: "child abuse neglect prevention" },
   { label: "Policy & legislation", query: "child welfare policy legislation" },
   { label: "Mental health", query: "child welfare mental health youth" },
-  { label: "Racial equity", query: "racial equity child welfare disparity" },
+  { label: "Racial equity", query: "racial equity child welfare disparity disproportionately abolotion" },
   { label: "Research", query: "child welfare research outcomes evidence" },
   { label: "Federal", query: "child welfare federal ACF children bureau" },
+  { label: "Prevention", query: "child welfare prevention child abuse prevention family seperation prevention" },
+  { label: "Home Visiting", query: "home visiting" },
 ];
 
 const RSS_SOURCES = [
@@ -57,7 +59,7 @@ const SOURCE_FILTERS = [
   { id: "acf", label: "Federal" },
 ];
 
-const CONTENT_TYPES = ["Article", "Webinar", "Podcast", "Research", "Federal", "Resource"];
+const CONTENT_TYPES = ["Article", "Webinar", "Podcast", "Research", "Federal", "Resource", "Policy", "Data", "Toolkit"];
 
 const FEATURED = {
   label: "Featured Story",

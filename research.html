@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Research, Policy & Practice — Child Welfare News</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+
+<div class="announce-bar">
+  Stay current on child welfare news — bookmark this site
+</div>
+
+<header class="masthead">
+  <div class="masthead-inner">
+    <a href="index.html" style="text-decoration:none;">
+      <div class="masthead-logo">child welfare news <span>+ more</span></div>
+    </a>
+    <nav class="masthead-nav">
+      <a class="nav-link" href="index.html#today">Today</a>
+      <a class="nav-link" href="webinars.html">Webinars</a>
+      <a class="nav-link" href="podcasts.html">Podcasts</a>
+      <a class="nav-link" href="research.html" style="color:var(--teal);font-weight:600;">Research</a>
+      <a class="nav-link" href="index.html#articles">All Articles</a>
+      <a class="nav-link" href="index.html">← Back to main site</a>
+    </nav>
+  </div>
+</header>
+
+<div class="page">
+
+  <div class="podcast-hero">
+    <h1 class="podcast-hero-title">Research, Policy & Practice</h1>
+    <p class="podcast-hero-sub">Peer-reviewed research, policy analysis, practice guides, toolkits, and data resources from across the child welfare field.</p>
+  </div>
+
+  <!-- SEARCH + FILTERS -->
+  <div class="webinar-search-section">
+    <div class="webinar-search-row">
+      <input type="text" class="webinar-search-input" id="researchSearch" placeholder="Search by title, description, or keyword…" autocomplete="off" />
+      <button class="webinar-search-btn" onclick="applyFilters()">Search</button>
+    </div>
+    <div style="margin-bottom:0.75rem;">
+      <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.06em;color:rgba(255,255,255,0.6);margin-bottom:6px;">Content Type</div>
+      <div class="webinar-topic-tags" id="typeTags"></div>
+    </div>
+    <div>
+      <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.06em;color:rgba(255,255,255,0.6);margin-bottom:6px;">Topic</div>
+      <div class="webinar-topic-tags" id="topicTags"></div>
+    </div>
+  </div>
+
+  <!-- LIST -->
+  <div class="webinar-list-header">
+    <div class="webinar-list-title">All Resources</div>
+    <span class="webinar-count" id="researchCount"></span>
+  </div>
+
+  <div id="researchGrid"></div>
+  <div class="pagination" id="researchPagination"></div>
+
+  <div style="margin-top:2rem;padding-top:1.5rem;border-top:1px solid var(--border);">
+    <a class="digest-see-all" href="index.html#missing">Submit a resource →</a>
+  </div>
+
+</div>
+
+<footer class="site-footer">
+  <span>Child Welfare News — Research, Policy & Practice</span>
+  <div class="footer-links">
+    <a href="index.html">Main Site</a>
+  </div>
+  <span id="footerUpdate"></span>
+</footer>
+
+<script src="js/utils.js"></script>
+<script src="js/research.js"></script>
+</body>
+</html>

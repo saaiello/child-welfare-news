@@ -5,7 +5,7 @@ const PAGE_SIZE = 10;
 
 const TOPICS = [
   "Foster care", "Family preservation", "Substance use", "Family treatment court",
-  "Adoption", "Kinship care", "Child abuse & neglect", "Policy & legislation",
+  "Adoption", "Home Visiting", "Prevention", "Kinship care", "Child abuse & neglect", "Policy & legislation",
   "Mental health", "Racial equity", "Research", "Federal", "General"
 ];
 
