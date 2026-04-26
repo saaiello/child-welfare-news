@@ -203,4 +203,8 @@ document.getElementById("webinarSearch").addEventListener("keydown", e => {
   if (e.key === "Enter") applyFilters();
 });
 
+document.getElementById("webinarSearch").addEventListener("input", e => {
+  if (e.target.value === "") applyFilters();
+});
+
 init();
