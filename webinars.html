@@ -33,21 +33,27 @@
 
 <div class="page">
 
-  <div class="podcast-hero">
-    <h1 class="podcast-hero-title">Webinars</h1>
-    <p class="podcast-hero-sub">Upcoming and recorded webinars from across the child welfare field — curated and updated regularly.</p>
+  <!-- MINI HERO -->
+  <div id="webinarHero"></div>
+
+  <!-- SEARCH + TOPIC TAGS -->
+  <div class="webinar-search-section">
+    <div class="webinar-search-row">
+      <input type="text" class="webinar-search-input" id="webinarSearch" placeholder="Search webinars by title or description…" autocomplete="off" />
+      <button class="webinar-search-btn" onclick="applyFilters()">Search</button>
+    </div>
+    <div class="webinar-topic-tags" id="topicTags"></div>
   </div>
 
-  <!-- FILTER TABS -->
-  <div class="tab-row" id="webinarTabRow">
-    <button class="tab active" onclick="switchTab('all')" id="tabAll">All</button>
-    <button class="tab" onclick="switchTab('upcoming')" id="tabUpcoming">Upcoming</button>
-    <button class="tab" onclick="switchTab('recorded')" id="tabRecorded">Recorded</button>
-  </div>
-
-  <div class="podcast-status">
-    <span class="podcast-count" id="webinarCount"></span>
-    <span class="api-pill loading" id="webinarPill">Loading...</span>
+  <!-- WEBINAR LIST -->
+  <div class="webinar-list-header">
+    <div class="webinar-list-title">All Webinars</div>
+    <div style="display:flex;align-items:center;gap:8px;">
+      <button class="webinar-type-filter active" id="filterAll" onclick="filterByType('all')">All</button>
+      <button class="webinar-type-filter" id="filterUpcoming" onclick="filterByType('upcoming')">Upcoming</button>
+      <button class="webinar-type-filter" id="filterRecorded" onclick="filterByType('recorded')">Recorded</button>
+      <span class="webinar-count" id="webinarCount"></span>
+    </div>
   </div>
 
   <div id="webinarGrid"></div>

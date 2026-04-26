@@ -276,3 +276,58 @@
     .podcast-preview-body { padding: 6px 8px 8px; }
     .podcast-preview-show { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--teal); margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .podcast-preview-title { font-size: 11px; font-weight: 500; color: var(--text-primary); line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+
+    /* WEBINARS PAGE */
+    .webinar-hero { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: center; background: var(--surface); border-radius: 16px; overflow: hidden; margin: 2rem 0; box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 8px rgba(0,0,0,0.04); }
+    .webinar-hero-image { width: 100%; height: 100%; min-height: 280px; object-fit: cover; display: block; }
+    .webinar-hero-placeholder { width: 100%; min-height: 280px; background: var(--teal); display: flex; align-items: center; justify-content: center; font-family: 'Playfair Display', serif; font-size: 48px; font-weight: 700; color: var(--yellow); opacity: 0.8; }
+    .webinar-hero-body { padding: 2rem 2rem 2rem 0; }
+    .webinar-hero-eyebrow { display: flex; align-items: center; gap: 10px; margin-bottom: 1rem; flex-wrap: wrap; }
+    .webinar-hero-label { font-size: 11px; font-weight: 700; padding: 4px 12px; border-radius: 3px; background: var(--teal); color: var(--yellow); letter-spacing: 0.08em; text-transform: uppercase; }
+    .webinar-hero-source { font-size: 12px; color: var(--text-tertiary); }
+    .webinar-hero-date { font-size: 12px; color: var(--text-tertiary); margin-left: auto; }
+    .webinar-hero-title { font-family: 'Playfair Display', serif; font-size: 28px; font-weight: 700; line-height: 1.3; color: var(--text-primary); margin-bottom: 1rem; }
+    .webinar-hero-desc { font-size: 14px; color: var(--text-secondary); line-height: 1.7; margin-bottom: 1.5rem; }
+    .webinar-hero-btn { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; color: var(--teal); border-bottom: 1.5px solid var(--teal); padding-bottom: 2px; text-decoration: none; }
+    .webinar-hero-btn:hover { text-decoration: none; opacity: 0.8; }
+
+    .webinar-search-section { background: var(--teal); border-radius: 16px; padding: 1.5rem 2rem; margin-bottom: 1.5rem; }
+    .webinar-search-row { display: flex; gap: 10px; margin-bottom: 1rem; }
+    .webinar-search-input { flex: 1; height: 42px; padding: 0 16px; font-size: 14px; font-family: 'DM Sans', sans-serif; border: none; border-radius: 8px; background: rgba(255,255,255,0.15); color: #fff; outline: none; }
+    .webinar-search-input::placeholder { color: rgba(255,255,255,0.5); }
+    .webinar-search-input:focus { background: rgba(255,255,255,0.2); }
+    .webinar-search-btn { height: 42px; padding: 0 20px; font-size: 14px; font-family: 'DM Sans', sans-serif; font-weight: 500; background: var(--yellow); color: var(--teal); border: none; border-radius: 8px; cursor: pointer; }
+    .webinar-search-btn:hover { opacity: 0.88; }
+    .webinar-topic-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+    .webinar-topic-tag { font-size: 12px; font-family: 'DM Sans', sans-serif; padding: 4px 12px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.3); background: transparent; color: rgba(255,255,255,0.8); cursor: pointer; transition: all 0.15s; }
+    .webinar-topic-tag:hover { border-color: var(--yellow); color: var(--yellow); }
+    .webinar-topic-tag.active { background: var(--yellow); color: var(--teal); border-color: var(--yellow); font-weight: 500; }
+
+    .webinar-list-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 8px; }
+    .webinar-list-title { font-family: 'Playfair Display', serif; font-size: 24px; font-weight: 700; color: var(--text-primary); }
+    .webinar-count { font-size: 13px; color: var(--text-secondary); }
+
+    .webinar-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem 1.5rem; margin-bottom: 1rem; cursor: pointer; transition: border-color 0.15s; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+    .webinar-card:hover { border-color: var(--teal); }
+    .webinar-card-meta { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; flex-wrap: wrap; }
+    .webinar-type-badge { font-size: 12px; font-weight: 500; padding: 2px 8px; border-radius: 3px; text-transform: uppercase; letter-spacing: 0.04em; }
+    .webinar-type-upcoming { background: var(--teal); color: var(--yellow); }
+    .webinar-type-recorded { background: var(--bg); color: var(--text-tertiary); border: 1px solid var(--border); }
+    .webinar-tag { font-size: 12px; padding: 2px 8px; border-radius: 3px; background: var(--teal-light); color: var(--teal); border: 1px solid var(--accent-border); }
+    .webinar-card-source { font-size: 12px; color: var(--text-tertiary); }
+    .webinar-card-date { font-size: 12px; color: var(--text-tertiary); margin-left: auto; }
+    .webinar-card-title { font-size: 16px; font-weight: 500; color: var(--text-primary); line-height: 1.45; margin-bottom: 6px; }
+    .webinar-card-desc { font-size: 13px; color: var(--text-secondary); line-height: 1.65; margin-bottom: 10px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .webinar-card-link { font-size: 12px; font-weight: 550; color: var(--teal); }
+    .webinar-card-link:hover { text-decoration: underline; }
+
+    @media (max-width: 768px) {
+      .webinar-hero { grid-template-columns: 1fr; }
+      .webinar-hero-image, .webinar-hero-placeholder { min-height: 180px; }
+      .webinar-hero-body { padding: 1.5rem; }
+      .webinar-hero-title { font-size: 22px; }
+    }
+
+    .webinar-type-filter { font-size: 12px; font-family: 'DM Sans', sans-serif; padding: 4px 12px; border-radius: 20px; border: 1px solid var(--border); background: var(--surface); color: var(--text-secondary); cursor: pointer; transition: all 0.15s; }
+    .webinar-type-filter:hover { border-color: var(--teal); color: var(--teal); }
+    .webinar-type-filter.active { background: var(--teal); border-color: var(--teal); color: var(--yellow); font-weight: 500; }
