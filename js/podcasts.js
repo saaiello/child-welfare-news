@@ -8,7 +8,6 @@ const PODCAST_SOURCES = [
   { id: "audionuggets", name: "Audio Nuggets: Mining For Gold", url: "https://rss.buzzsprout.com/2243612.rss" },
   { id: "torn", name: "Torn Podcast", url: "https://anchor.fm/s/dc5f30ac/podcast/rss" },
   { id: "upend", name: "The upEND Podcast", url: "https://anchor.fm/s/e01cfbfc/podcast/rss" },
-  { id: "imprintweekly", name: "The Imprint Weekly", url: "https://rss.buzzsprout.com/1376827.rss" },
   { id: "communityinsite", name: "Community In-Site", url: "https://rss.buzzsprout.com/2352800.rss" },
 ];
 
