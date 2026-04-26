@@ -93,6 +93,7 @@ let selectedFormTags = [];
 renderHero();
 buildSourceFilters();
 buildFormTags();
+loadPodcastPreview()
 runSearch();
 
 // ── HERO ─────────────────────────────────────────────────────────────────────
@@ -450,6 +451,121 @@ function renderDigestSections() {
   renderDigestList("fedsList", fedsItems, "feds");
 }
 
+// ── PODCAST PREVIEW ──────────────────────────────────────────────────────────
+async function loadPodcastPreview() {
+  const grid = document.getElementById("podcastPreviewGrid");
+  if (!grid) return;
+
+  try {
+    const results = await Promise.allSettled(PODCAST_SOURCES.map(fetchPodcastPreview));
+    let episodes = [];
+    results.forEach(r => { if (r.status === "fulfilled") episodes.push(...r.value); });
+    episodes.sort((a, b) => new Date(b.date) - new Date(a.date));
+    episodes = episodes.slice(0, 6);
+
+    if (!episodes.length) {
+      grid.innerHTML = '<p class="media-placeholder">No episodes available.</p>';
+      return;
+    }
+
+    grid.innerHTML = episodes.map(e => {
+      const img = e.image
+        ? `<img class="podcast-preview-img" src="${esc(e.image)}" alt="" loading="lazy" onerror="this.style.display='none'" />`
+        : `<div class="podcast-preview-placeholder">${esc(e.source.charAt(0))}</div>`;
+      return `<div class="podcast-preview-card" onclick="window.open('${esc(e.url)}','_blank')">
+        ${img}
+        <div class="podcast-preview-body">
+          <div class="podcast-preview-show">${esc(e.source)}</div>
+          <p class="podcast-preview-title">${esc(e.title)}</p>
+        </div>
+      </div>`;
+    }).join("");
+  } catch(e) {
+    grid.innerHTML = '<p class="media-placeholder">Could not load episodes.</p>';
+  }
+}
+
+async function fetchPodcastPreview(source) {
+  try {
+    const res = await fetch(PROXY + encodeURIComponent(source.url));
+    const text = await res.text();
+    const xml = new DOMParser().parseFromString(text, "text/html");
+    return Array.from(xml.querySelectorAll("item")).slice(0, 1).map(item => {
+      const rawTitle = item.querySelector("title")?.textContent?.trim() || "Untitled";
+      const title = rawTitle.replace(/<!\[CDATA\[|\]\]>/g, "").trim();
+      const guid = item.querySelector("guid")?.textContent?.trim() || "";
+      const enclosureUrl = item.querySelector("enclosure")?.getAttribute("url") || "";
+      const linkNext = item.querySelector("link")?.nextSibling?.textContent?.trim() || "";
+      let link = (linkNext.startsWith("http") ? linkNext : null) ||
+                 (enclosureUrl.startsWith("http") && !enclosureUrl.includes(".mp3") && !enclosureUrl.includes(".m4a") ? enclosureUrl : null) ||
+                 "#";
+      const pubDate = item.querySelector("pubDate")?.textContent?.trim() || "";
+      const date = pubDate ? new Date(pubDate).toISOString().slice(0, 10) : "";
+      const image = item.querySelector("itunes\\:image")?.getAttribute("href") ||
+                    item.querySelector("[rel='image']")?.getAttribute("href") ||
+                    null;
+      return { title, source: source.name, sourceId: source.id, date, url: link, image };
+    });
+  } catch(e) { return []; }
+}
+
+// ── PODCAST PREVIEW ──────────────────────────────────────────────────────────
+async function loadPodcastPreview() {
+  const grid = document.getElementById("podcastPreviewGrid");
+  if (!grid) return;
+
+  try {
+    const results = await Promise.allSettled(PODCAST_SOURCES.map(fetchPodcastPreview));
+    let episodes = [];
+    results.forEach(r => { if (r.status === "fulfilled") episodes.push(...r.value); });
+    episodes.sort((a, b) => new Date(b.date) - new Date(a.date));
+    episodes = episodes.slice(0, 6);
+
+    if (!episodes.length) {
+      grid.innerHTML = '<p class="media-placeholder">No episodes available.</p>';
+      return;
+    }
+
+    grid.innerHTML = episodes.map(e => {
+      const img = e.image
+        ? `<img class="podcast-preview-img" src="${esc(e.image)}" alt="" loading="lazy" onerror="this.style.display='none'" />`
+        : `<div class="podcast-preview-placeholder">${esc(e.source.charAt(0))}</div>`;
+      return `<div class="podcast-preview-card" onclick="window.open('${esc(e.url)}','_blank')">
+        ${img}
+        <div class="podcast-preview-body">
+          <div class="podcast-preview-show">${esc(e.source)}</div>
+          <p class="podcast-preview-title">${esc(e.title)}</p>
+        </div>
+      </div>`;
+    }).join("");
+  } catch(e) {
+    grid.innerHTML = '<p class="media-placeholder">Could not load episodes.</p>';
+  }
+}
+
+async function fetchPodcastPreview(source) {
+  try {
+    const res = await fetch(PROXY + encodeURIComponent(source.url));
+    const text = await res.text();
+    const xml = new DOMParser().parseFromString(text, "text/html");
+    return Array.from(xml.querySelectorAll("item")).slice(0, 1).map(item => {
+      const rawTitle = item.querySelector("title")?.textContent?.trim() || "Untitled";
+      const title = rawTitle.replace(/<!\[CDATA\[|\]\]>/g, "").trim();
+      const guid = item.querySelector("guid")?.textContent?.trim() || "";
+      const enclosureUrl = item.querySelector("enclosure")?.getAttribute("url") || "";
+      const linkNext = item.querySelector("link")?.nextSibling?.textContent?.trim() || "";
+      let link = (linkNext.startsWith("http") ? linkNext : null) ||
+                 (enclosureUrl.startsWith("http") && !enclosureUrl.includes(".mp3") && !enclosureUrl.includes(".m4a") ? enclosureUrl : null) ||
+                 "#";
+      const pubDate = item.querySelector("pubDate")?.textContent?.trim() || "";
+      const date = pubDate ? new Date(pubDate).toISOString().slice(0, 10) : "";
+      const image = item.querySelector("itunes\\:image")?.getAttribute("href") ||
+                    item.querySelector("[rel='image']")?.getAttribute("href") ||
+                    null;
+      return { title, source: source.name, sourceId: source.id, date, url: link, image };
+    });
+  } catch(e) { return []; }
+}
 function renderDigestList(id, items, type) {
   const el = document.getElementById(id);
   if (!items.length) {
