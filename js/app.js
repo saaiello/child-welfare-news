@@ -460,13 +460,13 @@ function renderDigestSections() {
   const today = new Date().toISOString().slice(0, 10);
   const thisMonth = today.slice(0, 7);
 
-  const todayItems = allArticles.filter(a => a.date === today).slice(0, 5);
-  const monthItems = allArticles.filter(a => a.date && a.date.startsWith(thisMonth) && a.date !== today).slice(0, 5);
+  const todayItems = allArticles.filter(a => a.date === today).slice(0, 2);
+  const monthItems = allArticles.filter(a => a.date && a.date.startsWith(thisMonth) && a.date !== today).slice(0, 3);
   const researchItems = allArticles.filter(a =>
     ["Research", "Policy & legislation"].includes(a.topic) &&
     ["casey", "cwmonitor", "nccpr", "childrensrights", "curated", "chapinhall", "childtrends", "urban", "firstfocus"].includes(a.sourceId)
   ).slice(0, 5);
-  const fedsItems = allArticles.filter(a => a.sourceId === "acf").slice(0, 5);
+  const fedsItems = allArticles.filter(a => a.sourceId === "acf").slice(0, 6);
 
   renderDigestList("todayList", todayItems, "today");
   renderDigestList("monthList", monthItems, "month");
