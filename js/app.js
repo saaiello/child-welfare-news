@@ -198,12 +198,9 @@ function prevSlide() {
 }
 
 function startCarousel() {
-  carouselInterval = setInterval(nextSlide, 5000);
 }
 
 function resetCarousel() {
-  clearInterval(carouselInterval);
-  startCarousel();
 }
 
 function renderHero() {
