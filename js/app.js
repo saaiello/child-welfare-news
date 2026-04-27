@@ -65,26 +65,15 @@ const CONTENT_TYPES = ["Article", "Webinar", "Podcast", "Research", "Federal", "
 const FEATURED = [
   {
     label: "Featured Story",
-    title: "August: When Child Welfare Chooses",
-    source: "Child Welfare News",
-    url: "https://childwelfarenews.substack.com/p/august-when-child-welfare-chooses",
-    note: "Every August, the child welfare system reveals its priorities. This piece examines what those choices say about who we protect — and who we don't.",
-    date: "2024-08-01",
-    image: null,
+    title: "Driving Change in Adoption Toolkit",
+    source: "Chapin Hall",
+    url: "https://www.chapinhall.org/project/driving-change-in-adoption/",
+    note: "The Selfless Love Foundation (in partnership with Chapin Hall and the Child Welfare League of America) hosted the National Think Tank on Adoption Policy in October 2025. The convening brought together young people with lived experience in foster care and adoption alongside child welfare system professionals and researchers from across the country. ",
+    date: "2025-25-03",
+    image: "https://www.chapinhall.org/wp-content/uploads/Black-father-and-son-adoption-writing-homework-980x520-c-center.jpg",
     isEditorsPick: false,
   }
 ];
-
-const EDITORS_PICK = {
-  label: "Editor's Pick",
-  title: "August: When Child Welfare Chooses",
-  source: "Child Welfare News",
-  url: "https://childwelfarenews.substack.com/p/august-when-child-welfare-chooses",
-  note: "Why August is the hardest month in the system — and what it reveals about how we prioritize children.",
-  date: "2024-08-01",
-  image: null,
-  isEditorsPick: true,
-};
 
 // ── STATE ────────────────────────────────────────────────────────────────────
 let activeTag = "All";
@@ -882,7 +871,7 @@ async function submitForm() {
   if (!title || !url) { alert("Please fill in at least a title and URL."); return; }
 
   try {
-    const formEndpoint = "https://docs.google.com/forms/d/e/1FAIpQLSfRJ8JTuz4icXf-X8M9k9qN_S5gfsx0fqvNW4zSnisCulkDig/formResponse";
+    const baseUrl = "https://docs.google.com/forms/d/e/1FAIpQLSfRJ8JTuz4icXf-X8M9k9qN_S5gfsx0fqvNW4zSnisCulkDig/viewform";
     const params = new URLSearchParams();
     params.append("entry.1396869931", title);
     params.append("entry.1336107118", url);
@@ -893,12 +882,7 @@ async function submitForm() {
     params.append("entry.1501976415", name);
     params.append("entry.1817029821", email);
     params.append("entry.486365505", notes);
-    await fetch(formEndpoint, {
-      method: "POST",
-      mode: "no-cors",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: params.toString(),
-    });
+    window.open(`${baseUrl}?${params.toString()}`, "_blank");
   } catch(e) {}
 
   document.getElementById("submitTitle").value = "";
