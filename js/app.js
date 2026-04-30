@@ -20,10 +20,10 @@ const TOPICS = [
   { label: "Child abuse & neglect", query: "child abuse neglect prevention" },
   { label: "Policy & legislation", query: "child welfare policy legislation" },
   { label: "Mental health", query: "child welfare mental health youth" },
-  { label: "Racial equity", query: "racial equity child welfare disparity disproportionately abolotion" },
+  { label: "Racial equity", query: "racial equity child welfare disparity disproportionately abolition" },
   { label: "Research", query: "child welfare research outcomes evidence" },
   { label: "Federal", query: "child welfare federal ACF children bureau" },
-  { label: "Prevention", query: "child welfare prevention child abuse prevention family seperation prevention" },
+  { label: "Prevention", query: "child welfare prevention child abuse prevention family separation prevention" },
   { label: "Home Visiting", query: "home visiting" },
 ];
 
@@ -33,7 +33,7 @@ const RSS_SOURCES = [
   { id: "casey", name: "Annie E. Casey Foundation", desc: "Research & policy", url: "https://www.aecf.org/blog/rss.xml", badge: "b-casey" },
   { id: "cwmonitor", name: "Child Welfare Monitor", desc: "Policy analysis", url: "https://childwelfaremonitor.org/feed", badge: "b-monitor" },
   { id: "nccpr", name: "NCCPR", desc: "Reform news", url: "https://www.nccprblog.org/feeds/posts/default?alt=rss", badge: "b-nccpr" },
-  { id: "firstfocus", name: "First Focus on Children", desc: "Child advocacy and policy", url: "https://firstfocus.org/feed", badge: "b-rights" },
+  { id: "firstfocus", name: "First Focus on Children", desc: "Child advocacy and policy", url: "https://firstfocus.org/feed", badge: "b-rights" },{ id: "kqed", name: "KQED", url: "https://ww2.kqed.org/news/feed", badge: "b-default", filtered: true },
 ];
 
 const PODCAST_SOURCES = [
@@ -59,6 +59,22 @@ const SOURCE_FILTERS = [
   { id: "curated", label: "Curated" },
   { id: "acf", label: "Federal" },
 ];
+
+const KEYWORDS = [
+  "child welfare", "foster care", "family preservation",
+  "substance use", "treatment court", "kinship care",
+  "child abuse", "child neglect", "adoption", "reunification",
+  "racial equity", "disparity", "disproportionate",
+  "family separation", "home visiting", "ACF",
+  "children's bureau", "termination of parental rights",
+  "group home", "residential care", "congregate care",
+  "DCFS", "CPS", "child protective"
+];
+
+function matchesKeywords(text) {
+  const lower = text.toLowerCase();
+  return KEYWORDS.some(k => lower.includes(k.toLowerCase()));
+}
 
 const CONTENT_TYPES = ["Article", "Webinar", "Podcast", "Research", "Federal", "Resource", "Policy", "Data", "Toolkit"];
 
@@ -335,6 +351,9 @@ async function fetchFeed(source) {
       const date = pubDate ? new Date(pubDate).toISOString().slice(0, 10) : "";
       const image = item.querySelector("enclosure")?.getAttribute("url") || item.querySelector("image url")?.textContent?.trim() || null;
       return { title, source: source.name, topic: inferTopic(title + " " + desc), date, desc, state: detectState(title + " " + desc), url: link, image, badge: source.badge, sourceId: source.id, type: "Article" };
+    }).filter(article => {
+      if (!source.filtered) return true;
+    return matchesKeywords(article.title + " " + article.desc);
     });
   } catch(e) { return []; }
 }
