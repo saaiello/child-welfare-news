@@ -139,7 +139,7 @@
     .articles-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 10px; }
     .articles-title { font-family: 'Playfair Display', serif; font-size: 28px; font-weight: 700; }
     .articles-title .hl { background: var(--yellow); padding: 0 6px; }
-    .articles-controls { display: flex; align-items: center; gap: 10px; }
+    .articles-controls { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
     .sort-select { font-size: 12px; font-family: 'DM Sans', sans-serif; padding: 5px 10px; border: 1px solid var(--border); border-radius: 6px; background: var(--surface); color: var(--text-secondary); cursor: pointer; outline: none; }
     .api-pill { font-size: 11px; padding: 3px 10px; border-radius: 20px; border: 1px solid; font-weight: 500; }
     .api-pill.live { background: #EAF3DE; color: #3B6D11; border-color: #639922; }
@@ -241,6 +241,19 @@
       .hero-title { font-size: 26px; }
       .page { padding: 0 1rem 3rem; }
       .masthead { padding: 1rem; }
+      .webinar-layout { grid-template-columns: 1fr; }
+      .research-preview-grid { grid-template-columns: 1fr; }
+      .podcast-preview-grid { grid-template-columns: 1fr; width: 100%; }
+      .podcast-preview-card:not(:first-child) { display: none; }
+      .podcast-preview-card:first-child { display: flex; flex-direction: row; align-items: center; gap: 1rem; width: 100%; overflow: visible; }
+      .podcast-preview-card:first-child .podcast-preview-img { width: 80px; height: 80px; flex-shrink: 0; object-fit: cover; }
+      .podcast-preview-title { -webkit-line-clamp: 3; line-clamp: 3; }
+      .podcast-preview-img { width: 80px; height: 80px; flex-shrink: 0; object-fit: cover; }
+      .podcast-preview-show { white-space: normal; overflow: visible; }
+      .podcast-preview-body { flex: 1; min-width: 0; overflow: visible; }
+      .article-thumb { display: none; }
+      .article-thumb-placeholder { display: none; }
+      .share-buttons { display: flex; }
     }
     /* PODCASTS PAGE */
     .podcast-hero { padding: 2.5rem 0 1.5rem; border-bottom: 1px solid var(--border); margin-bottom: 2rem; }

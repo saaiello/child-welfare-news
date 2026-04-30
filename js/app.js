@@ -34,6 +34,7 @@ const RSS_SOURCES = [
   { id: "cwmonitor", name: "Child Welfare Monitor", desc: "Policy analysis", url: "https://childwelfaremonitor.org/feed", badge: "b-monitor" },
   { id: "nccpr", name: "NCCPR", desc: "Reform news", url: "https://www.nccprblog.org/feeds/posts/default?alt=rss", badge: "b-nccpr" },
   { id: "firstfocus", name: "First Focus on Children", desc: "Child advocacy and policy", url: "https://firstfocus.org/feed", badge: "b-rights" },{ id: "kqed", name: "KQED", url: "https://ww2.kqed.org/news/feed", badge: "b-default", filtered: true },
+  //{ id: "nmsource", name: "NM Source", url: "https://sourcenm.com/feed", badge: "b-default", filtered: true }, Source NM returns 413/500 through CORS proxy — revisit when backend is in place
 ];
 
 const PODCAST_SOURCES = [
@@ -353,7 +354,7 @@ async function fetchFeed(source) {
       return { title, source: source.name, topic: inferTopic(title + " " + desc), date, desc, state: detectState(title + " " + desc), url: link, image, badge: source.badge, sourceId: source.id, type: "Article" };
     }).filter(article => {
       if (!source.filtered) return true;
-    return matchesKeywords(article.title + " " + article.desc);
+      return matchesKeywords(article.title + " " + article.desc);
     });
   } catch(e) { return []; }
 }
@@ -566,7 +567,7 @@ function changePage(page) {
 
 // ── DIGEST SECTIONS ──────────────────────────────────────────────────────────
 function renderDigestSections() {
-  const today = new Date().toISOString().slice(0, 10);
+  const today = new Date().toLocaleDateString("en-CA");
   const thisMonth = today.slice(0, 7);
 
   const todayItems = allArticles.filter(a => a.date === today).slice(0, 2);
