@@ -33,8 +33,12 @@ const RSS_SOURCES = [
   { id: "casey", name: "Annie E. Casey Foundation", desc: "Research & policy", url: "https://www.aecf.org/blog/rss.xml", badge: "b-casey" },
   { id: "cwmonitor", name: "Child Welfare Monitor", desc: "Policy analysis", url: "https://childwelfaremonitor.org/feed", badge: "b-monitor" },
   { id: "nccpr", name: "NCCPR", desc: "Reform news", url: "https://www.nccprblog.org/feeds/posts/default?alt=rss", badge: "b-nccpr" },
-  { id: "firstfocus", name: "First Focus on Children", desc: "Child advocacy and policy", url: "https://firstfocus.org/feed", badge: "b-rights" },{ id: "kqed", name: "KQED", url: "https://ww2.kqed.org/news/feed", badge: "b-default", filtered: true },
-  //{ id: "nmsource", name: "NM Source", url: "https://sourcenm.com/feed", badge: "b-default", filtered: true }, Source NM returns 413/500 through CORS proxy — revisit when backend is in place
+  { id: "firstfocus", name: "First Focus on Children", desc: "Child advocacy and policy", url: "https://firstfocus.org/feed", badge: "b-rights" },
+  { id: "kqed", name: "KQED", url: "https://ww2.kqed.org/news/feed", badge: "b-default", filtered: true },
+  { id: "newsmaine", name: "Newscenter Maine", url: "https://www.newscentermaine.com/feeds/syndication/rss/news/politics/maine-politics", badge: "b-default", filtered: true },
+  // { id: "wcnc", name: "WCNC", url: "https://www.wcnc.com/feeds/syndication/rss/news/politics", badge: "b-default", filtered: true },
+  // { id: "nmsource", name: "NM Source", url: "https://sourcenm.com/feed", badge: "b-default", filtered: true },
+  //  Source NM & WCNC return 413/500 through CORS proxy — revisit when backend is in place
 ];
 
 const PODCAST_SOURCES = [
@@ -44,7 +48,7 @@ const PODCAST_SOURCES = [
   { id: "audionuggets", name: "Audio Nuggets: Mining For Gold", url: "https://rss.buzzsprout.com/2243612.rss" },
   { id: "torn", name: "Torn Podcast", url: "https://anchor.fm/s/dc5f30ac/podcast/rss" },
   { id: "upend", name: "The upEND Podcast", url: "https://anchor.fm/s/e01cfbfc/podcast/rss" },
-  { id: "imprint", name: "The Imprint Weekly", url: "https://rss.buzzsprout.com/1376827.rss" },
+  // too large { id: "imprint", name: "The Imprint Weekly", url: "https://rss.buzzsprout.com/1376827.rss" },
   { id: "communityinsite", name: "Community In-Site", url: "https://rss.buzzsprout.com/2352800.rss" },
 ];
 
